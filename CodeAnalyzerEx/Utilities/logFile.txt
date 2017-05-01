@@ -1,0 +1,47 @@
+
+                                      CodeAnalysis - Version 1.4
+    ==============================================================================================
+     Fri Apr 14 20:20:03 2017
+     Path: "D:\CodeAnalyzerEx\Utilities"
+     Args: *.h, *.cpp, *.cs, /m, /f, /r
+                                                                               
+           Code Metrics - Start Line, Size (lines/code), and Complexity (number of scopes)
+    ==============================================================================================
+
+                 file name        type                               name    line    size    cplx
+    -----------------------  ----------  ---------------------------------  ------  ------  ------
+                             namespace                   Global Namespace       1       1      20
+
+                 file name        type                               name    line    size    cplx
+    -----------------------  ----------  ---------------------------------  ------  ------  ------
+               Utilities.h   namespace                          Utilities      52      50      16
+               Utilities.h       class                               test      54       4       1
+              public data: std :: vector < std :: string > publicVector ; 
+               Utilities.h       class                       StringHelper      60      14      11
+               Utilities.h       class                          Converter      79       5       3
+               Utilities.h    function                           toString      87       5       1
+               Utilities.h    function                            toValue      95       6       1
+
+                 file name        type                               name    line    size    cplx
+    -----------------------  ----------  ---------------------------------  ------  ------  ------
+             Utilities.cpp    function                              Title      28       4       1
+             Utilities.cpp    function                              Title      34       5       1
+             Utilities.cpp    function                              title      41       4       1
+             Utilities.cpp    function                              title      47       5       1
+             Utilities.cpp    function                             sTitle      54       7       1
+             Utilities.cpp    function                             sTitle      63       8       1
+             Utilities.cpp    function                              split      73      23       4
+             Utilities.cpp    function                            putline      98       3       1
+             Utilities.cpp    function                               main     108      41       2
+
+                          Functions Exceeding Metric Limits and Public Data
+    ==============================================================================================
+                 file name        type                               name    line    size    cplx
+    -----------------------  ----------  ---------------------------------  ------  ------  ------
+
+              public data: Utilities.h : 56 - class test
+                std :: vector < std :: string > publicVector ; 
+
+
+    searched     5 dirs
+   processed     2 files

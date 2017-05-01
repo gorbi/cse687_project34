@@ -1,0 +1,6 @@
+
+                                      CodeAnalysis - Version 1.4
+    ==============================================================================================
+     Fri Apr 14 15:03:31 2017
+     Path: "C:\Users\Nagaprasad N\Documents\Visual Studio 2015\Projects\CodeAnalyzerEx"
+     Args: *.h, *.cpp, *.cs, /m, /f, /r
