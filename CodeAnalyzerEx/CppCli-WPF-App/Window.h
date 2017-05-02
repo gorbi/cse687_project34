@@ -127,6 +127,7 @@ namespace CppCliWindows
 	Button^ hUploadButton = gcnew Button();
 	Button^ hDisplayButton = gcnew Button();
 	Button^ hDownloadButton = gcnew Button();
+	Button^ hDeleteButton = gcnew Button();
 	RadioButton^ hRadioCategoryUFL1 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryUFL2 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryUFL3 = gcnew RadioButton();
@@ -156,6 +157,7 @@ namespace CppCliWindows
     void browseForFolder(Object^ sender, RoutedEventArgs^ args);
 	void displayFilesForCategory(Object^ sender, RoutedEventArgs^ args);
 	void downloadFilesForCategory(Object^ sender, RoutedEventArgs^ args);
+	void deleteCategory(Object^ sender, RoutedEventArgs^ args);
     void OnLoaded(Object^ sender, RoutedEventArgs^ args);
     void Unloading(Object^ sender, System::ComponentModel::CancelEventArgs^ args);
   private:

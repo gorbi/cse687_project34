@@ -40,8 +40,9 @@ WPFCppCliDemo::WPFCppCliDemo()
   hUploadButton->Click += gcnew RoutedEventHandler(this, &WPFCppCliDemo::uploadFileList);
   hDisplayButton->Click += gcnew RoutedEventHandler(this, &WPFCppCliDemo::displayFilesForCategory);
   hDownloadButton->Click += gcnew RoutedEventHandler(this, &WPFCppCliDemo::downloadFilesForCategory);
+  hDeleteButton->Click += gcnew RoutedEventHandler(this, &WPFCppCliDemo::deleteCategory);
   // set Window properties
-  this->Title = "WPF C++/CLI Demo";
+  this->Title = "Client";
   this->Width = 800;
   this->Height = 600;
   // attach dock panel to Window
@@ -103,7 +104,7 @@ void WPFCppCliDemo::setUpStatusBar()
 void WPFCppCliDemo::setUpTabControl()
 {
   hGrid->Children->Add(hTabControl);
-  hSendMessageTab->Header = "Send Message";
+  hSendMessageTab->Header = "Publish / Delete / Messages from server";
   hUploadFLTab->Header = "Upload File List";
   hDisplayFLTab->Header = "Display File List";
   hTabControl->Items->Add(hUploadFLTab);
@@ -187,7 +188,6 @@ void WPFCppCliDemo::setButtonsProperties()
 	hClearButton->BorderBrush = Brushes::Black;
 	hSendMessageGrid->SetRow(hClearButton, 1);
 	hSendMessageGrid->Children->Add(hClearButton);
-
   RowDefinition^ hRow2Def22 = gcnew RowDefinition();
   hRow2Def22->Height = GridLength(15);
   hSendMessageGrid->RowDefinitions->Add(hRow2Def22);
@@ -199,7 +199,6 @@ void WPFCppCliDemo::setButtonsProperties()
   hRadioCategoryPM1->BorderBrush = Brushes::Black;
   hSendMessageGrid->SetRow(hRadioCategoryPM1, 2);
   hSendMessageGrid->Children->Add(hRadioCategoryPM1);
-
   RowDefinition^ hRow2Def22w = gcnew RowDefinition();
   hRow2Def22w->Height = GridLength(15);
   hSendMessageGrid->RowDefinitions->Add(hRow2Def22w);
@@ -211,7 +210,6 @@ void WPFCppCliDemo::setButtonsProperties()
   hRadioCategoryPM2->BorderBrush = Brushes::Black;
   hSendMessageGrid->SetRow(hRadioCategoryPM2, 3);
   hSendMessageGrid->Children->Add(hRadioCategoryPM2);
-
   RowDefinition^ hRow2Def22c = gcnew RowDefinition();
   hRow2Def22c->Height = GridLength(15);
   hSendMessageGrid->RowDefinitions->Add(hRow2Def22c);
@@ -223,17 +221,33 @@ void WPFCppCliDemo::setButtonsProperties()
   hRadioCategoryPM3->BorderBrush = Brushes::Black;
   hSendMessageGrid->SetRow(hRadioCategoryPM3, 4);
   hSendMessageGrid->Children->Add(hRadioCategoryPM3);
-
   RowDefinition^ hRow2Def22fa = gcnew RowDefinition();
   hRow2Def22fa->Height = GridLength(40);
   hSendMessageGrid->RowDefinitions->Add(hRow2Def22fa);
   hSendButton->Content = "Publish";
-  hSendButton->Height = 30;
-  hSendButton->Width = 120;
-  hSendButton->BorderThickness = Thickness(2);
-  hSendButton->BorderBrush = Brushes::Black;
-  hSendMessageGrid->SetRow(hSendButton, 5);
-  hSendMessageGrid->Children->Add(hSendButton);
+  Border^ hBorder3 = gcnew Border();
+  hBorder3->Width = 120;
+  hBorder3->Height = 30;
+  hBorder3->BorderThickness = Thickness(1);
+  hBorder3->BorderBrush = Brushes::Black;
+  hBorder3->Child = hSendButton;
+  TextBlock^ hSpacer = gcnew TextBlock();
+  hSpacer->Width = 10;
+  hDeleteButton->Content = "Delete";
+  Border^ hBorder34 = gcnew Border();
+  hBorder34->Width = 120;
+  hBorder34->Height = 30;
+  hBorder34->BorderThickness = Thickness(1);
+  hBorder34->BorderBrush = Brushes::Black;
+  hBorder34->Child = hDeleteButton;
+  StackPanel^ hStackPanel112 = gcnew StackPanel();
+  hStackPanel112->Children->Add(hBorder3);
+  hStackPanel112->Children->Add(hSpacer);
+  hStackPanel112->Children->Add(hBorder34);
+  hStackPanel112->Orientation = Orientation::Horizontal;
+  hStackPanel112->HorizontalAlignment = System::Windows::HorizontalAlignment::Center;
+  hSendMessageGrid->SetRow(hStackPanel112, 5);
+  hSendMessageGrid->Children->Add(hStackPanel112);
 }
 
 void WPFCppCliDemo::setUpSendMessageView()
@@ -442,6 +456,12 @@ void CppCliWindows::WPFCppCliDemo::downloadFilesForCategory(Object ^ sender, Rou
 	for each (String^ item in hDListBox->SelectedItems) {
 		std::cout << "\n downloading: " + toStdString(item);
 	}
+}
+void CppCliWindows::WPFCppCliDemo::deleteCategory(Object ^ sender, RoutedEventArgs ^ args)
+{
+	int category = getCategoryPM();
+
+	std::cout << toStdString("\n invoked delete for category: " + category);
 }
 void WPFCppCliDemo::setUpConnectionView()
 {
