@@ -20,13 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileSystem.cpp" />
-    <ClCompile Include="MsgClient.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="Sockets.cpp" />
     <ClCompile Include="WindowsHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Client.h" />
     <ClInclude Include="FileSystem.h" />
-    <ClInclude Include="MsgServer.h" />
+    <ClInclude Include="ClientHandler.h" />
     <ClInclude Include="Sockets.h" />
     <ClInclude Include="WindowsHelpers.h" />
   </ItemGroup>
@@ -52,7 +53,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
