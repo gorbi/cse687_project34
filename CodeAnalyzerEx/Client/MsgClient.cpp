@@ -34,7 +34,7 @@
 #include "Sockets.h"
 #include "FileSystem.h"
 #include "../Logger/Logger.h"
-#include "../HttpMessage/Utilities.h"
+#include "../Utilities/Utilities.h"
 #include <string>
 #include <iostream>
 #include <thread>

@@ -131,7 +131,7 @@
 #include <atomic>
 
 #include "WindowsHelpers.h"
-#include "../HttpMessage/Utilities.h"
+#include "../Utilities/Utilities.h"
 #include "../Logger/Logger.h"
 
 #pragma warning(disable:4522)

@@ -41,7 +41,7 @@
 #include "FileSystem.h"
 #include "../Cpp11-BlockingQueue/Cpp11-BlockingQueue.h"
 #include "../Logger/Logger.h"
-#include "../HttpMessage/Utilities.h"
+#include "../Utilities/Utilities.h"
 #include <string>
 #include <iostream>
 

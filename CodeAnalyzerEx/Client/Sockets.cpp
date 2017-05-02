@@ -18,7 +18,7 @@
 #include <memory>
 #include <functional>
 #include <exception>
-#include "../HttpMessage/Utilities.h"
+#include "../Utilities/Utilities.h"
 
 using Util = Utilities::StringHelper;
 template<typename T>
