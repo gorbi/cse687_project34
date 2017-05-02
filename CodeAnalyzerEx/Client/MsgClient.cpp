@@ -33,14 +33,15 @@
 #include "../HttpMessage/HttpMessage.h"
 #include "Sockets.h"
 #include "FileSystem.h"
-#include "Logger.h"
+#include "../Logger/Logger.h"
 #include "../HttpMessage/Utilities.h"
 #include <string>
 #include <iostream>
 #include <thread>
 #include "MsgServer.h"
+#include "../Analyzer/Executive.h"
 
-using Show = StaticLogger<1>;
+using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
 using Utils = StringHelper;
 
@@ -160,12 +161,12 @@ bool MsgClient::sendFile(const std::string& filename, Socket& socket)
 void MsgClient::startListener(int port)
 {
 	::SetConsoleTitle(L"HttpMessage Server - Runs Forever");
-
+	
 	Show::attach(&std::cout);
 	Show::start();
 	Show::title("\n  HttpMessage Server started");
 
-	BlockingQueue<HttpMessage> msgQ;
+	Async::BlockingQueue<HttpMessage> msgQ;
 
 	try
 	{
@@ -284,6 +285,8 @@ int main()
 	tserver.detach();
 
 	c1.execute(100, 1);
+
+	CodeAnalysis::CodeAnalysisExecutive a;
 	
 	/*std::thread t1(
 		[&]() { c1.execute(100, 20); } // 20 messages 100 millisec apart

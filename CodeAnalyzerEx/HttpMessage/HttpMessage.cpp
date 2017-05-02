@@ -5,7 +5,7 @@
 /////////////////////////////////////////////////////////////////////
 
 #include "HttpMessage.h"
-#include "Utilities.h"
+#include "../Utilities/Utilities.h"
 #include <iostream>
 
 using namespace Utilities;

@@ -39,13 +39,13 @@
 #include "../HttpMessage/HttpMessage.h"
 #include "Sockets.h"
 #include "FileSystem.h"
-#include "Cpp11-BlockingQueue.h"
-#include "Logger.h"
+#include "../Cpp11-BlockingQueue/Cpp11-BlockingQueue.h"
+#include "../Logger/Logger.h"
 #include "../HttpMessage/Utilities.h"
 #include <string>
 #include <iostream>
 
-using Show = StaticLogger<1>;
+using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
 
 /////////////////////////////////////////////////////////////////////
@@ -64,13 +64,13 @@ using namespace Utilities;
 class ClientHandler
 {
 public:
-	ClientHandler(BlockingQueue<HttpMessage>& msgQ) : msgQ_(msgQ) {}
+	ClientHandler(Async::BlockingQueue<HttpMessage>& msgQ) : msgQ_(msgQ) {}
 	void operator()(Socket socket);
 private:
 	bool connectionClosed_;
 	HttpMessage readMessage(Socket& socket);
 	bool readFile(const std::string& filename, size_t fileSize, Socket& socket);
-	BlockingQueue<HttpMessage>& msgQ_;
+	Async::BlockingQueue<HttpMessage>& msgQ_;
 };
 //----< this defines processing to frame messages >------------------
 

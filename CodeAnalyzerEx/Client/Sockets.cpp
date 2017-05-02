@@ -23,7 +23,7 @@
 using Util = Utilities::StringHelper;
 template<typename T>
 using Conv = Utilities::Converter<T>;
-using Show = StaticLogger<1>;
+using Show = Logging::StaticLogger<1>;
 
 /////////////////////////////////////////////////////////////////////////////
 // SocketSystem class members

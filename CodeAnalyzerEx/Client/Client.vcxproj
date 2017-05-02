@@ -19,24 +19,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Cpp11-BlockingQueue.cpp" />
     <ClCompile Include="FileSystem.cpp" />
-    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="MsgClient.cpp" />
     <ClCompile Include="Sockets.cpp" />
     <ClCompile Include="WindowsHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cpp11-BlockingQueue.h" />
     <ClInclude Include="FileSystem.h" />
-    <ClInclude Include="Logger.h" />
     <ClInclude Include="MsgServer.h" />
     <ClInclude Include="Sockets.h" />
     <ClInclude Include="WindowsHelpers.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Analyzer\Executive.vcxproj">
+      <Project>{936434e9-93f0-467b-bbb7-d682483244ba}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Cpp11-BlockingQueue\Cpp11-BlockingQueue.vcxproj">
+      <Project>{9efc55b0-e8e8-443d-920f-c09d0af54185}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\HttpMessage\HttpMessage.vcxproj">
       <Project>{ba896bd5-c155-493b-9120-3854b644e474}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Logger\Logger.vcxproj">
+      <Project>{66d2c764-9da8-4505-b869-8e84e8968f7c}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">

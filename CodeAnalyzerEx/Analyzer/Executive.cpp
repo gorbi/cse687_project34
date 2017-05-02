@@ -894,76 +894,80 @@ std::string CodeAnalysisExecutive::systemTime()
 
 #include <fstream>
 
+#ifdef DEBUG
 int main(int argc, char* argv[])
 {
-  using namespace CodeAnalysis;
+	using namespace CodeAnalysis;
 
-  CodeAnalysisExecutive exec;
+	CodeAnalysisExecutive exec;
 
-  try {
-	std::cout << "\n-----------------Requirement 10: Automated unit test suite-------------------\n\n";
-    bool succeeded = exec.ProcessCommandLine(argc, argv);
-    if (!succeeded)
-    {
-      return 1;
-    }
-    exec.setDisplayModes();
-    exec.startLogger(std::cout);
+	try {
+		std::cout << "\n-----------------Requirement 10: Automated unit test suite-------------------\n\n";
+		bool succeeded = exec.ProcessCommandLine(argc, argv);
+		if (!succeeded)
+		{
+			return 1;
+		}
+		exec.setDisplayModes();
+		exec.startLogger(std::cout);
 
-    std::ostringstream tOut("CodeAnalysis - Version 1.4");
-    Utils::sTitle(tOut.str(), 3, 92, tOut, '=');
-    Rslt::write(tOut.str());
+		std::ostringstream tOut("CodeAnalysis - Version 1.4");
+		Utils::sTitle(tOut.str(), 3, 92, tOut, '=');
+		Rslt::write(tOut.str());
 
-    //Rslt::write("\n     " + exec.getAnalysisPath());
-    Rslt::write("\n     " + exec.systemTime());
-    Rslt::flush();
-    exec.showCommandLineArguments(argc, argv);
-    Rslt::write("\n");
+		//Rslt::write("\n     " + exec.getAnalysisPath());
+		Rslt::write("\n     " + exec.systemTime());
+		Rslt::flush();
+		exec.showCommandLineArguments(argc, argv);
+		Rslt::write("\n");
 
-    exec.getSourceFiles();
-    exec.processSourceCode(true);
-    exec.complexityAnalysis();
-    exec.dispatchOptionalDisplays();
-    exec.flushLogger();
-    exec.displayMetricSummary(50,10);
+		exec.getSourceFiles();
+		exec.processSourceCode(true);
+		exec.complexityAnalysis();
+		exec.dispatchOptionalDisplays();
+		exec.flushLogger();
+		exec.displayMetricSummary(50, 10);
 
-    exec.flushLogger();
-    Rslt::write("\n");
-    std::ostringstream out;
-    out << "\n  " << std::setw(10) << "searched" << std::setw(6) << exec.numDirs() << " dirs";
-    out << "\n  " << std::setw(10) << "processed" << std::setw(6) << exec.numFiles() << " files";
-    Rslt::write(out.str());
-    Rslt::write("\n");
-    exec.stopLogger();
-    std::cout << "\n  Code Analysis completed";
+		exec.flushLogger();
+		Rslt::write("\n");
+		std::ostringstream out;
+		out << "\n  " << std::setw(10) << "searched" << std::setw(6) << exec.numDirs() << " dirs";
+		out << "\n  " << std::setw(10) << "processed" << std::setw(6) << exec.numFiles() << " files";
+		Rslt::write(out.str());
+		Rslt::write("\n");
+		exec.stopLogger();
+		std::cout << "\n  Code Analysis completed";
 
-	Files allsubfiles = exec.getAllsubFiles();
+		Files allsubfiles = exec.getAllsubFiles();
 
-	//Type Analysis
-    TypeAnal ta;
-    ta.doTypeAnal();
-	//Get Line Number Details
-	std::unordered_map<std::string, std::vector<std::unordered_map<std::string, std::string>>>& lineMapInst = ta.getLineNumMap();
+		//Type Analysis
+		TypeAnal ta;
+		ta.doTypeAnal();
+		//Get Line Number Details
+		std::unordered_map<std::string, std::vector<std::unordered_map<std::string, std::string>>>& lineMapInst = ta.getLineNumMap();
 
-	
-	//Dependency Analysis
-	DepAnal da(exec.getDepXMLPath(), 5);
-	for (File file : allsubfiles)
-		da.doDepAnal(ta, file);
 
-	//Invoke code publisher
-	CodePublisher cPub(da);
-	cPub.fileList(allsubfiles, lineMapInst);
+		//Dependency Analysis
+		DepAnal da(exec.getDepXMLPath(), 5);
+		for (File file : allsubfiles)
+			da.doDepAnal(ta, file);
 
-	std::cout << "\n\n-------------------------------------------------------------------------------------\n\n";
+		//Invoke code publisher
+		CodePublisher cPub(da);
+		cPub.fileList(allsubfiles, lineMapInst);
 
-  }
-  catch (std::exception& except)
-  {
-    exec.flushLogger();
-    std::cout << "\n\n  caught exception in Executive::main: " + std::string(except.what()) + "\n\n";
-    exec.stopLogger();
-    return 1;
-  }
-  return 0;
+		std::cout << "\n\n-------------------------------------------------------------------------------------\n\n";
+
+	}
+	catch (std::exception& except)
+	{
+		exec.flushLogger();
+		std::cout << "\n\n  caught exception in Executive::main: " + std::string(except.what()) + "\n\n";
+		exec.stopLogger();
+		return 1;
+	}
+	return 0;
 }
+#endif // DEBUG
+
+

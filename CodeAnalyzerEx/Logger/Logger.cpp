@@ -138,7 +138,7 @@ struct Cosmetic
   ~Cosmetic() { std::cout << "\n\n"; }
 } cosmetic;
 
-#ifdef TEST_LOGGER
+#ifdef TEST_LOGGER_MAIN
 
 using Util = Utilities::StringHelper;
 

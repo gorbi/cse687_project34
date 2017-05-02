@@ -8,11 +8,11 @@
 //              jfawcett@twcny.rr.com                                //
 ///////////////////////////////////////////////////////////////////////
 
-//#include <cctype>
 #include <iostream>
-#include <iomanip>
+#include <sstream>
+#include <cctype>
 #include <locale>
-#include <clocale>
+#include <iomanip>
 #include "Utilities.h"
 
 using namespace Utilities;

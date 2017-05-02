@@ -132,7 +132,7 @@
 
 #include "WindowsHelpers.h"
 #include "../HttpMessage/Utilities.h"
-#include "Logger.h"
+#include "../Logger/Logger.h"
 
 #pragma warning(disable:4522)
 #pragma comment(lib, "Ws2_32.lib")
@@ -267,7 +267,7 @@ bool SocketListener::start(CallObj& co)
     [&]()
     {
       //Verbose::show("server waiting for connection");
-      StaticLogger<1>::write("\n  server waiting for connection");
+      Logging::StaticLogger<1>::write("\n  server waiting for connection");
 
       while (!acceptFailed_)
       {
@@ -281,7 +281,7 @@ bool SocketListener::start(CallObj& co)
           continue;
         }
         //Verbose::show("server accepted connection");
-        StaticLogger<1>::write("\n  server accepted connection");
+        Logging::StaticLogger<1>::write("\n  server accepted connection");
 
         // start thread to handle client request
 
@@ -292,7 +292,7 @@ bool SocketListener::start(CallObj& co)
         clientThread.detach();  // detach - listener won't access thread again
       }
       //Verbose::show("Listen thread stopping");
-      StaticLogger<1>::write("\n  Listen thread stopping");
+      Logging::StaticLogger<1>::write("\n  Listen thread stopping");
     }
   );
   ListenThread.detach();

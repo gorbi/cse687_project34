@@ -45,7 +45,9 @@
 */
 #include <string>
 #include <vector>
+#include <iostream>
 #include <sstream>
+#include <locale>
 #include <functional>
 
 namespace Utilities
@@ -64,6 +66,28 @@ namespace Utilities
     static void Title(std::string src, std::ostringstream& out);
     static void title(std::string src, std::ostream& out = std::cout);
     static void title(std::string src, std::ostringstream& out);
+	static std::string trim(const std::string& src) {
+		std::locale loc;
+		std::string trimmed = src;
+		size_t first = 0;
+		while (true)
+		{
+			if (std::isspace(trimmed[first], loc))
+				++first;
+			else
+				break;
+		}
+		size_t last = trimmed.size() - 1;
+		while (true)
+		{
+			if (std::isspace(trimmed[last], loc) && last > 0)
+				--last;
+			else
+				break;
+
+		}
+		return trimmed.substr(first, last - first + 1);
+	}
     static void sTitle(
       std::string src, size_t offset, size_t width, std::ostream& out = std::cout, char underline = '-'
     );
