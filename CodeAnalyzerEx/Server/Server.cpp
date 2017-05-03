@@ -198,6 +198,28 @@ void execute(const size_t TimeBetweenMessages, const size_t NumMessages)
 
 }
 
+std::string getRemoteCodePublishedDir(int category) {
+	switch (category) {
+	case 1:
+		return "../RemoteCodePublished/Category1";
+	case 2:
+		return "../RemoteCodePublished/Category2";
+	default:
+		return "../RemoteCodePublished/Category3";
+	}
+}
+
+std::string getRemoteCodeDir(int category) {
+	switch (category) {
+	case 1:
+		return "../RemoteCode/Category1";
+	case 2:
+		return "../RemoteCode/Category2";
+	default:
+		return "../RemoteCode/Category3";
+	}
+}
+
 int publishCode(std::string dir) {
 
 	char * argv[7];
