@@ -100,9 +100,6 @@
       <Project>{8a5b596c-c501-4cf0-af7e-6e23f53b18bd}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\Debug\MockChannel.lib" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

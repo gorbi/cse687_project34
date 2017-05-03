@@ -24,7 +24,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\Debug\MockChannel.lib" />
-  </ItemGroup>
 </Project>

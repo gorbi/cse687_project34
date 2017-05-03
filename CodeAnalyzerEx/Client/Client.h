@@ -40,7 +40,6 @@
 #include <iostream>
 #include <thread>
 #include "ClientHandler.h"
-#include "../Analyzer/Executive.h"
 
 using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
@@ -294,8 +293,6 @@ int main()
 	tserver.detach();
 
 	c1.execute(100, 1);
-
-	CodeAnalysis::CodeAnalysisExecutive a;
 
 	/*std::thread t1(
 	[&]() { c1.execute(100, 20); } // 20 messages 100 millisec apart
