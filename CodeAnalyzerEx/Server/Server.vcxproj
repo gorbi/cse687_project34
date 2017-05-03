@@ -146,6 +146,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClientHandler.h" />
+    <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="Sockets.h" />
+    <ClInclude Include="WindowsHelpers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FileSystem.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Sockets.cpp" />
+    <ClCompile Include="WindowsHelpers.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cpp11-BlockingQueue\Cpp11-BlockingQueue.vcxproj">
+      <Project>{9efc55b0-e8e8-443d-920f-c09d0af54185}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\HttpMessage\HttpMessage.vcxproj">
+      <Project>{ba896bd5-c155-493b-9120-3854b644e474}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Logger\Logger.vcxproj">
+      <Project>{66d2c764-9da8-4505-b869-8e84e8968f7c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

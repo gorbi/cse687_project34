@@ -159,7 +159,6 @@
     <ClCompile Include="..\SemiExp\SemiExp.cpp" />
     <ClCompile Include="..\Tokenizer\Tokenizer.cpp" />
     <ClCompile Include="..\Utilities\Utilities.cpp" />
-    <ClCompile Include="Executive.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\AbstractSyntaxTree\AbstrSynTree.h" />

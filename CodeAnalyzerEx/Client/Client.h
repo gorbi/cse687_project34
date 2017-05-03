@@ -69,7 +69,7 @@ class MsgClient
 public:
 	using EndPoint = std::string;
 	void execute(const size_t TimeBetweenMessages, const size_t NumMessages);
-	void startListener(int);
+	HttpMessage startListener(int);
 	std::string publish(int);
 private:
 	HttpMessage makeMessage(size_t n, const std::string& msgBody, const EndPoint& ep);
@@ -160,16 +160,9 @@ bool MsgClient::sendFile(const std::string& filename, Socket& socket)
 	file.close();
 	return true;
 }
-void MsgClient::startListener(int port)
+HttpMessage MsgClient::startListener(int port)
 {
-	::SetConsoleTitle(L"HttpMessage Server - Runs Forever");
-
-	Show::attach(&std::cout);
-	Show::start();
-	Show::title("\n  HttpMessage Server started");
-
 	Async::BlockingQueue<HttpMessage> msgQ;
-
 	try
 	{
 		SocketSystem ss;
@@ -181,22 +174,53 @@ void MsgClient::startListener(int port)
 		* We could easily change that by sending a distinguished
 		* message for shutdown.
 		*/
-		while (true)
-		{
-			HttpMessage msg = msgQ.deQ();
-			Show::write("\n\n  server recvd message with body contents:\n" + msg.bodyString());
-		}
+		return msgQ.deQ();
 	}
 	catch (std::exception& exc)
 	{
 		Show::write("\n  Exeception caught: ");
 		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
 		Show::write(exMsg);
+		HttpMessage empty;
+		return empty;
 	}
 }
 std::string MsgClient::publish(int category)
 {
-	return std::string("Published for "+std::to_string(category));
+	try {
+		SocketSystem ss;
+		SocketConnecter si;
+		while (!si.connect("localhost", 8080))
+		{
+			Show::write("\n client waiting to connect");
+			::Sleep(100);
+		}
+
+		// send a set of messages
+
+		HttpMessage msg;
+		msg = makeMessage(1, "PUBLISH", "toAddr:localhost:8080");
+		msg.addAttribute(HttpMessage::attribute("CATEGORY",std::to_string(category)));
+		sendMessage(msg, si);
+
+		HttpMessage res = startListener(8081);
+		if (res.bodyString() == "PUBLISH") {
+			if (res.findValue("RESULT")=="SUCCESS")
+				return std::string("Server successfully published files in category: "+ res.findValue("CATEGORY"));
+			else
+				return std::string("Server failed to publish files in category: " + res.findValue("CATEGORY"));
+		}
+		else {
+			return std::string("Server failed to publish category: " + res.findValue("CATEGORY"));
+		}
+	}
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+		return std::string("Caught exception");
+	}
 }
 //----< this defines the behavior of the client >--------------------
 
