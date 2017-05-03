@@ -289,6 +289,15 @@ void WPFCppCliDemo::addText(String^ msg)
   if (array[0] == "PUBLISH" || array[0] == "DELETE") {
 	  hTextBlock1->Text += array[1] + "\n";
   }
+  else if (array[0] == "DISPLAY") {
+	  hDListBox->Items->Clear();
+	  if (array->Length > 2) {
+		  for (int i = 2; i < array->Length; i++) {
+			  hDListBox->Items->Add(array[i]);
+		  }
+	  }
+	  hTextBlock1->Text += array[1] + "\n";
+  }
 }
 
 void WPFCppCliDemo::getMessage()
@@ -451,11 +460,21 @@ void CppCliWindows::WPFCppCliDemo::displayFilesForCategory(Object ^ sender, Rout
 {
 	int category = getCategoryDFL();
 
+	if (category == -1)
+		return;
+
+	pSendr_->postMessage(toStdString("DISPLAY," + category));
+	Console::Write("DISPLAY " + category + "\n");
+	hStatus->Text = "DISPLAY " + category;
+
 	std::cout << toStdString("\n invoked display for category: " + category);
 }
 void CppCliWindows::WPFCppCliDemo::downloadFilesForCategory(Object ^ sender, RoutedEventArgs ^ args)
 {
 	int category = getCategoryDFL();
+
+	if (category == -1)
+		return;
 
 	std::cout << toStdString("\n invoked download for category: " + category);
 	for each (String^ item in hDListBox->SelectedItems) {

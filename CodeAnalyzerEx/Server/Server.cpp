@@ -393,6 +393,59 @@ void processDeleteRequest(int category) {
 	}
 }
 
+void processDisplayRequest(int category) {
+	Show::write("\n\n  server recvd display request for category: " + std::to_string(category));
+
+	int result = 0;
+	std::vector<std::string> filesPub;
+	std::string files("");
+	try {
+		filesPub = FileSystem::Directory::getFiles(getRemoteCodePublishedDir(category), "*.*");
+		std::cout << "\n  Number of published files found for category " << category << ": " << filesPub.size();
+		for (std::string file : filesPub) {
+			files += file + ",";
+		}
+		if (files.length() > 0)
+			files.pop_back();
+		else
+			files = "NONE";
+		std::cout << "\n  Value of FILES attribute generated: " << files;
+	}
+	catch (std::exception& except)
+	{
+		std::cout << "\n\n  caught exception: " + std::string(except.what()) + "\n\n";
+		result = 1;
+	}
+
+	try {
+
+		SocketSystem ss;
+		SocketConnecter si;
+		while (!si.connect("localhost", 8081))
+		{
+			Show::write("\n client waiting to connect");
+			::Sleep(100);
+		}
+
+		// send a set of messages
+		HttpMessage res = makeMessage(1, "DISPLAY", "toAddr:localhost:8081");
+		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
+		if (result == 0) {
+			res.addAttribute(HttpMessage::attribute("RESULT", "SUCCESS"));
+			res.addAttribute(HttpMessage::attribute("FILES", files));
+		}
+		else
+			res.addAttribute(HttpMessage::attribute("RESULT", "FAILURE"));
+		sendMessage(res, si);
+	}
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exeception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+	}
+}
+
 
 //----< entry point - runs two clients each on its own thread >------
 int main()
@@ -423,6 +476,8 @@ int main()
 				processPublishRequest(std::stoi(msg.findValue("CATEGORY")));
 			} else if (msg.bodyString() == "DELETE") {
 				processDeleteRequest(std::stoi(msg.findValue("CATEGORY")));
+			} else if (msg.bodyString() == "DISPLAY") {
+				processDisplayRequest(std::stoi(msg.findValue("CATEGORY")));
 			}
 		}
 	}

@@ -72,6 +72,7 @@ public:
 	HttpMessage startListener(int);
 	std::string publish(int);
 	std::string remove(int);
+	std::string display(int);
 private:
 	HttpMessage makeMessage(size_t n, const std::string& msgBody, const EndPoint& ep);
 	void sendMessage(HttpMessage& msg, Socket& socket);
@@ -209,7 +210,7 @@ std::string MsgClient::publish(int category)
 				return std::string("Server failed to publish files in category: " + res.findValue("CATEGORY"));
 		}
 		else {
-			return std::string("Server failed to publish category: " + res.findValue("CATEGORY"));
+			return std::string("Server failed to publish files in category: " + res.findValue("CATEGORY"));
 		}
 	}
 	catch (std::exception& exc)
@@ -244,7 +245,49 @@ std::string MsgClient::remove(int category)
 				return std::string("Server failed to delete files in category: " + res.findValue("CATEGORY"));
 		}
 		else {
-			return std::string("Server failed to delete category: " + res.findValue("CATEGORY"));
+			return std::string("Server failed to delete files in category: " + res.findValue("CATEGORY"));
+		}
+	}
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+		return std::string("Caught exception");
+	}
+}
+
+std::string MsgClient::display(int category)
+{
+	try {
+		SocketSystem ss;
+		SocketConnecter si;
+		while (!si.connect("localhost", 8080))
+		{
+			Show::write("\n client waiting to connect");
+			::Sleep(100);
+		}
+		// send a set of messages
+		HttpMessage msg;
+		msg = makeMessage(1, "DISPLAY", "toAddr:localhost:8080");
+		msg.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
+		sendMessage(msg, si);
+		HttpMessage res = startListener(8081);
+		if (res.bodyString() == "DISPLAY") {
+			if (res.findValue("RESULT") == "SUCCESS") {
+				std::cout << "\n  Received success response for display request";
+				std::string r("Server successfully sent/displayed files in category: " + res.findValue("CATEGORY"));
+				std::string files = res.findValue("FILES");
+				if (files != "NONE")
+					r += ","+files;
+				std::cout << "\n  Response: " << r;
+				return r;
+			}
+			else
+				return std::string("Server failed to send/display files in category: " + res.findValue("CATEGORY"));
+		}
+		else {
+			return std::string("Server failed to send/display files in category: " + res.findValue("CATEGORY"));
 		}
 	}
 	catch (std::exception& exc)
