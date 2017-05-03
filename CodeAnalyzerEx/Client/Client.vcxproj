@@ -31,9 +31,6 @@
     <ClInclude Include="WindowsHelpers.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Analyzer\Executive.vcxproj">
-      <Project>{936434e9-93f0-467b-bbb7-d682483244ba}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\Cpp11-BlockingQueue\Cpp11-BlockingQueue.vcxproj">
       <Project>{9efc55b0-e8e8-443d-920f-c09d0af54185}</Project>
     </ProjectReference>
