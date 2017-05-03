@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileSystem.cpp" />
-    <ClCompile Include="Client.cpp" />
     <ClCompile Include="Sockets.cpp" />
     <ClCompile Include="WindowsHelpers.cpp" />
   </ItemGroup>

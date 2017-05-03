@@ -265,12 +265,14 @@ std::string WPFCppCliDemo::toStdString(String^ pStr)
 
 void WPFCppCliDemo::sendMessage(Object^ obj, RoutedEventArgs^ args)
 {
-	int category = getCategoryPM();
+  int category = getCategoryPM();
 
-	std::cout << toStdString("\n invoked publish for category: " + category);
-  /*pSendr_->postMessage(toStdString(msgText));
-  Console::Write("\n  sent message");
-  hStatus->Text = "Sent message";*/
+  if (category == -1)
+	  return;
+
+  pSendr_->postMessage(toStdString("PUBLISH," + category));
+  Console::Write("PUBLISHED " + category);
+  hStatus->Text = "PUBLISHED " + category;
 }
 
 String^ WPFCppCliDemo::toSystemString(std::string& str)
@@ -283,7 +285,10 @@ String^ WPFCppCliDemo::toSystemString(std::string& str)
 
 void WPFCppCliDemo::addText(String^ msg)
 {
-  hTextBlock1->Text += msg + "\n\n";
+  array<String^>^ array = msg->Split(',');
+  if (array[0] == "PUBLISH") {
+	  hTextBlock1->Text += array[1] + "\n";
+  }
 }
 
 void WPFCppCliDemo::getMessage()

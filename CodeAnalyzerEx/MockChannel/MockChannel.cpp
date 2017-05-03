@@ -16,6 +16,21 @@
 
 using BQueue = Async::BlockingQueue < Message >;
 
+#include <sstream>
+#include <vector>
+#include <iterator>
+
+std::vector<std::string> split(const std::string &s, char delim) {
+	std::stringstream ss;
+	ss.str(s);
+	std::string item;
+	std::vector<std::string> elems;
+	while (std::getline(ss, item, delim)) {
+		elems.push_back(item);
+	}
+	return elems;
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // Sendr class
 // - accepts messages from client for consumption by MockChannel
@@ -73,7 +88,7 @@ private:
   ISendr* pISendr_;
   IRecvr* pIRecvr_;
   bool stop_ = false;
-  MsgClient c1;
+  MsgClient c;
 };
 
 //----< pass pointers to Sender and Receiver >-------------------------------
@@ -100,8 +115,15 @@ void MockChannel::start()
     {
       std::cout << "\n  channel deQing message";
       Message msg = sendQ.deQ();  // will block here so send quit message when stopping
+	  Message res;
+	  std::vector<std::string> m = split(msg, ',');
+	  if (m[0] == "PUBLISH") {
+		  res = c.publish(std::stoi(m[1]));
+		  res = "PUBLISH," + res;
+	  }
+
       std::cout << "\n  channel enQing message";
-      recvQ.enQ(msg);
+      recvQ.enQ(res);
     }
     std::cout << "\n  Server stopping\n\n";
   });
