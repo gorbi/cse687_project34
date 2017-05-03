@@ -201,29 +201,29 @@ void execute(const size_t TimeBetweenMessages, const size_t NumMessages)
 std::string getRemoteCodePublishedDir(int category) {
 	switch (category) {
 	case 1:
-		return "../RemoteCodePublished/Category1";
+		return "..\\RemoteCodePublished\\Category1\\";
 	case 2:
-		return "../RemoteCodePublished/Category2";
+		return "..\\RemoteCodePublished\\Category2\\";
 	default:
-		return "../RemoteCodePublished/Category3";
+		return "..\\RemoteCodePublished\\Category3\\";
 	}
 }
 
 std::string getRemoteCodeDir(int category) {
 	switch (category) {
 	case 1:
-		return "../RemoteCode/Category1";
+		return "..\\RemoteCode\\Category1";
 	case 2:
-		return "../RemoteCode/Category2";
+		return "..\\RemoteCode\\Category2";
 	default:
-		return "../RemoteCode/Category3";
+		return "..\\RemoteCode\\Category3";
 	}
 }
 
-int publishCode(std::string dir) {
+int publishCode(int category) {
 
 	char * argv[7];
-	std::string x[] = { "CodeAnalyzer.exe",dir,"*.h","*.cpp","/m","/f","/r" };
+	std::string x[] = { "CodeAnalyzer.exe",getRemoteCodeDir(category),"*.h","*.cpp","/m","/f","/r" };
 	for (int i = 0; i < 7; i++) {
 		const char* xx = x[i].c_str();
 		argv[i] = _strdup(xx);
@@ -286,6 +286,7 @@ int publishCode(std::string dir) {
 
 		//Invoke code publisher
 		CodePublisher cPub(da);
+		cPub.htmlFilePath = getRemoteCodeDir(category);
 		cPub.fileList(allsubfiles, lineMapInst);
 
 		std::cout << "\n\n-------------------------------------------------------------------------------------\n\n";
@@ -304,7 +305,7 @@ int publishCode(std::string dir) {
 void processPublishRequest(int category) {
 	Show::write("\n\n  server recvd publish request for category: " + std::to_string(category));
 
-	::Sleep(5000);
+	int result = publishCode(category);
 
 	try {
 		SocketSystem ss;
@@ -318,7 +319,10 @@ void processPublishRequest(int category) {
 		// send a set of messages
 		HttpMessage res = makeMessage(1, "PUBLISH", "toAddr:localhost:8081");
 		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
-		res.addAttribute(HttpMessage::attribute("RESULT", "SUCCESS"));
+		if (result == 0)
+			res.addAttribute(HttpMessage::attribute("RESULT", "SUCCESS"));
+		else
+			res.addAttribute(HttpMessage::attribute("RESULT", "FAILURE"));
 		sendMessage(res, si);
 	}
 	catch (std::exception& exc)

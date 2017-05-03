@@ -43,6 +43,7 @@
 class CodePublisher {
 
 public:
+	std::string htmlFilePath;
 	CodePublisher(CodeAnalysis::DepAnal&);
 	void fileList(std::vector<std::string>, std::unordered_map<std::string, std::vector<std::unordered_map<std::string, std::string>>>&);
 private:
@@ -64,7 +65,6 @@ private:
 	void printIdxInitial(std::ofstream&);
 
 	std::string htmlHeader = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\css\\main.css\">\n<script src=\"..\\js\\main.js\">\n</script>\n</head>\n";
-	std::string htmlFilePath = "..\\PublishedCode\\html\\";
 	std::vector<std::string> generateUniqueButtonAndDiv();
 	int uniqueId = 0;
 	CodeAnalysis::DepAnal& dpAnal;
@@ -77,7 +77,7 @@ private:
 CodePublisher::CodePublisher(CodeAnalysis::DepAnal& dp) :dpAnal(dp) {
 	std::cout << "\n\n";
 	std::cout << "************************************************************\n";
-	std::cout << "HTML files are present in path ..\\PublishedCode\\html\n";
+	std::cout << "HTML files are present in path ..\\RemoteCodePublished\\CategoryX\n";
 	std::cout << "************************************************************\n";
 	std::cout << "**********************************************************************************************************\n";
 	std::cout << "Requirement 5 : CSS file for styling is present in path: ..\\css\\main.css\n";
@@ -95,7 +95,7 @@ void CodePublisher::fileList(std::vector<std::string> listOfFiles, std::unordere
 	std::ofstream strBuff;
 	strBuff.open(htmlFilePath + "index.htm");
 	std::cout << "*************************************************************************************************\n";
-	std::cout << "Requirement 9 : All important packages are published in ..\\PublishedCode\\html\\index.htm file \n";
+	std::cout << "Requirement 9 : All important packages are published in ..\\RemoteCodePublished\\CategoryX\\index.htm file \n";
 	std::cout << "*************************************************************************************************\n";
 	printIdxInitial(strBuff);
 	strBuff << "<ul style=\"list - style - type:disc\">";
