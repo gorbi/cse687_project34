@@ -1,3 +1,4 @@
+#pragma warning (disable: 4503)
 /////////////////////////////////////////////////////////////////////////
 // Server.cpp - Demonstrates simple one-way HTTP messaging             //
 //                                                                     //
@@ -43,7 +44,6 @@
 
 using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
-using Utils = StringHelper;
 using EndPoint = std::string;
 
 //----< factory for creating messages >------------------------------
@@ -286,7 +286,7 @@ int publishCode(int category) {
 
 		//Invoke code publisher
 		CodePublisher cPub(da);
-		cPub.htmlFilePath = getRemoteCodeDir(category);
+		cPub.htmlFilePath = getRemoteCodePublishedDir(category);
 		cPub.fileList(allsubfiles, lineMapInst);
 
 		std::cout << "\n\n-------------------------------------------------------------------------------------\n\n";

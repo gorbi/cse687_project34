@@ -240,3 +240,11 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+# project specific
+/CodeAnalyzerEx/RemoteCode/Category1
+/CodeAnalyzerEx/RemoteCode/Category2
+/CodeAnalyzerEx/RemoteCode/Category3
+/CodeAnalyzerEx/RemoteCodePublished/Category1
+/CodeAnalyzerEx/RemoteCodePublished/Category2
+/CodeAnalyzerEx/RemoteCodePublished/Category3

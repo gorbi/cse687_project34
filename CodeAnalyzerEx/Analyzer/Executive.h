@@ -824,7 +824,7 @@ namespace CodeAnalysis
   //----< walk tree of element nodes >---------------------------------
 
   template<typename element>
-  void TreeWalk(element* pItem, bool details = false)
+  void TreeWalkOLD(element* pItem, bool details = false)
   {
 	  static std::string path;
 	  if (path != pItem->path_ && details == true)
@@ -840,7 +840,7 @@ namespace CodeAnalysis
 	  ++indentLevel;
 	  while (iter != pItem->children_.end())
 	  {
-		  TreeWalk(*iter);
+		  TreeWalkOLD(*iter);
 		  ++iter;
 	  }
 	  --indentLevel;
@@ -852,7 +852,7 @@ namespace CodeAnalysis
 	  flushLogger();
 	  ASTNode* pGlobalScope = pRepo_->getGlobalScope();
 	  Utils::title("Abstract Syntax Tree");
-	  TreeWalk(pGlobalScope);
+	  TreeWalkOLD(pGlobalScope);
 	  Rslt::write("\n");
   }
   //----< show functions with metrics exceeding specified limits >-----
