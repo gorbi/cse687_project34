@@ -121,6 +121,10 @@ void MockChannel::start()
 		  res = c.publish(std::stoi(m[1]));
 		  res = "PUBLISH," + res;
 	  }
+	  else if (m[0] == "DELETE") {
+		  res = c.remove(std::stoi(m[1]));
+		  res = "DELETE," + res;
+	  }
 
       std::cout << "\n  channel enQing message";
       recvQ.enQ(res);

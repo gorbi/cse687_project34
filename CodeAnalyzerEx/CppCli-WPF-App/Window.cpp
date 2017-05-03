@@ -271,7 +271,7 @@ void WPFCppCliDemo::sendMessage(Object^ obj, RoutedEventArgs^ args)
 	  return;
 
   pSendr_->postMessage(toStdString("PUBLISH," + category));
-  Console::Write("PUBLISHED " + category);
+  Console::Write("PUBLISHED " + category + "\n");
   hStatus->Text = "PUBLISHED " + category;
 }
 
@@ -286,7 +286,7 @@ String^ WPFCppCliDemo::toSystemString(std::string& str)
 void WPFCppCliDemo::addText(String^ msg)
 {
   array<String^>^ array = msg->Split(',');
-  if (array[0] == "PUBLISH") {
+  if (array[0] == "PUBLISH" || array[0] == "DELETE") {
 	  hTextBlock1->Text += array[1] + "\n";
   }
 }
@@ -466,6 +466,12 @@ void CppCliWindows::WPFCppCliDemo::deleteCategory(Object ^ sender, RoutedEventAr
 {
 	int category = getCategoryPM();
 
+	if (category == -1)
+		return;
+
+	pSendr_->postMessage(toStdString("DELETE," + category));
+	Console::Write("DELETE " + category+"\n");
+	hStatus->Text = "DELETE " + category;
 	std::cout << toStdString("\n invoked delete for category: " + category);
 }
 void WPFCppCliDemo::setUpConnectionView()

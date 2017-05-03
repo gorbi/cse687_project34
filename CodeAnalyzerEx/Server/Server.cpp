@@ -212,11 +212,11 @@ std::string getRemoteCodePublishedDir(int category) {
 std::string getRemoteCodeDir(int category) {
 	switch (category) {
 	case 1:
-		return "..\\RemoteCode\\Category1";
+		return "..\\RemoteCode\\Category1\\";
 	case 2:
-		return "..\\RemoteCode\\Category2";
+		return "..\\RemoteCode\\Category2\\";
 	default:
-		return "..\\RemoteCode\\Category3";
+		return "..\\RemoteCode\\Category3\\";
 	}
 }
 
@@ -333,6 +333,66 @@ void processPublishRequest(int category) {
 	}
 }
 
+void cleanup(int category) {
+	std::vector<std::string> filesPub = FileSystem::Directory::getFiles(getRemoteCodePublishedDir(category), "*.*");
+	std::cout << "\n  Number of published files found for category " << category << ": " << filesPub.size();
+	for (std::string file : filesPub) {
+		std::string fileP(getRemoteCodePublishedDir(category) + file);
+		std::cout << "\n file path: " << fileP;
+		remove(fileP.c_str());
+	}
+	std::vector<std::string> files = FileSystem::Directory::getFiles(getRemoteCodeDir(category), "*.*");
+	std::cout << "\n  Number of source files found for category "<<category<<": " << files.size();
+	for (std::string file : files) {
+		std::string fileP(getRemoteCodeDir(category) + file);
+		std::cout << "\n file path: " << fileP;
+		remove(fileP.c_str());
+	}
+}
+
+int deleteCode(int category) {
+	try {
+		cleanup(category);
+		return 0;
+	}
+	catch (std::exception& except)
+	{
+		std::cout << "\n\n  caught exception: " + std::string(except.what()) + "\n\n";
+		return 1;
+	}
+}
+
+void processDeleteRequest(int category) {
+	Show::write("\n\n  server recvd delete request for category: " + std::to_string(category));
+
+	int result = deleteCode(category);
+
+	try {
+		SocketSystem ss;
+		SocketConnecter si;
+		while (!si.connect("localhost", 8081))
+		{
+			Show::write("\n client waiting to connect");
+			::Sleep(100);
+		}
+
+		// send a set of messages
+		HttpMessage res = makeMessage(1, "DELETE", "toAddr:localhost:8081");
+		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
+		if (result == 0)
+			res.addAttribute(HttpMessage::attribute("RESULT", "SUCCESS"));
+		else
+			res.addAttribute(HttpMessage::attribute("RESULT", "FAILURE"));
+		sendMessage(res, si);
+	}
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exeception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+	}
+}
+
 
 //----< entry point - runs two clients each on its own thread >------
 int main()
@@ -361,6 +421,8 @@ int main()
 			HttpMessage msg = msgQ.deQ();
 			if (msg.bodyString()=="PUBLISH") {
 				processPublishRequest(std::stoi(msg.findValue("CATEGORY")));
+			} else if (msg.bodyString() == "DELETE") {
+				processDeleteRequest(std::stoi(msg.findValue("CATEGORY")));
 			}
 		}
 	}
