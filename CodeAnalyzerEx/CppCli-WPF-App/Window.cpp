@@ -286,7 +286,7 @@ String^ WPFCppCliDemo::toSystemString(std::string& str)
 void WPFCppCliDemo::addText(String^ msg)
 {
   array<String^>^ array = msg->Split(',');
-  if (array[0] == "PUBLISH" || array[0] == "DELETE") {
+  if (array[0] == "PUBLISH" || array[0] == "DELETE" || array[0] == "UPLOAD") {
 	  hTextBlock1->Text += array[1] + "\n";
   }
   else if (array[0] == "DISPLAY") {
@@ -329,10 +329,22 @@ void WPFCppCliDemo::uploadFileList(Object^ sender, RoutedEventArgs^ args)
 {
 	int category = getCategoryUFL();
 
+	if (category == -1 || hListBox->Items->Count <= 0)
+		return;
+
+
+
 	std::cout << toStdString("\n invoked upload for category: " + category);
+	String^ files;
 	for each (String^ item in hListBox->Items) {
-		std::cout << "\n uploading: "+ toStdString(item);
+		files += item+",";
 	}
+	files += "END";
+
+	pSendr_->postMessage(toStdString("UPLOAD," + category+ "," + files));
+
+	Console::Write("UPLOAD TO " + category + "\n");
+	hStatus->Text = "UPLOAD TO " + category;
 }
 
 

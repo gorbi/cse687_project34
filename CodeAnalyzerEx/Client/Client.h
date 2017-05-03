@@ -40,6 +40,20 @@
 #include <iostream>
 #include <thread>
 #include "ClientHandler.h"
+#include <sstream>
+#include <vector>
+#include <iterator>
+
+std::vector<std::string> split(const std::string &s, char delim) {
+	std::stringstream ss;
+	ss.str(s);
+	std::string item;
+	std::vector<std::string> elems;
+	while (std::getline(ss, item, delim)) {
+		elems.push_back(item);
+	}
+	return elems;
+}
 
 using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
@@ -68,15 +82,15 @@ class MsgClient
 {
 public:
 	using EndPoint = std::string;
-	void execute(const size_t TimeBetweenMessages, const size_t NumMessages);
 	HttpMessage startListener(int);
 	std::string publish(int);
 	std::string remove(int);
 	std::string display(int);
+	std::string upload(int category, std::string filenames);
 private:
 	HttpMessage makeMessage(size_t n, const std::string& msgBody, const EndPoint& ep);
 	void sendMessage(HttpMessage& msg, Socket& socket);
-	bool sendFile(const std::string& fqname, Socket& socket);
+	bool sendFile(const std::string& fqname, Socket& socket, int category);
 };
 
 //----< factory for creating messages >------------------------------
@@ -129,38 +143,48 @@ void MsgClient::sendMessage(HttpMessage& msg, Socket& socket)
 *   has been sent.
 * - Sends in binary mode which works for either text or binary.
 */
-bool MsgClient::sendFile(const std::string& filename, Socket& socket)
+bool MsgClient::sendFile(const std::string& fqname, Socket& socket, int category)
 {
 	// assumes that socket is connected
+	try {
 
-	std::string fqname = "../TestFiles/" + filename;
-	FileSystem::FileInfo fi(fqname);
-	size_t fileSize = fi.size();
-	std::string sizeString = Converter<size_t>::toString(fileSize);
-	FileSystem::File file(fqname);
-	file.open(FileSystem::File::in, FileSystem::File::binary);
-	if (!file.isGood())
-		return false;
-
-	HttpMessage msg = makeMessage(1, "", "localhost::8080");
-	msg.addAttribute(HttpMessage::Attribute("file", filename));
-	msg.addAttribute(HttpMessage::Attribute("content-length", sizeString));
-	sendMessage(msg, socket);
-	const size_t BlockSize = 2048;
-	Socket::byte buffer[BlockSize];
-	while (true)
-	{
-		FileSystem::Block blk = file.getBlock(BlockSize);
-		if (blk.size() == 0)
-			break;
-		for (size_t i = 0; i < blk.size(); ++i)
-			buffer[i] = blk[i];
-		socket.send(blk.size(), buffer);
+		std::string filename = FileSystem::Path::getName(fqname);
+		FileSystem::FileInfo fi(fqname);
+		size_t fileSize = fi.size();
+		std::string sizeString = Converter<size_t>::toString(fileSize);
+		FileSystem::File file(fqname);
+		file.open(FileSystem::File::in, FileSystem::File::binary);
 		if (!file.isGood())
-			break;
+			return false;
+
+		HttpMessage msg = makeMessage(1, "", "localhost::8080");
+		msg.addAttribute(HttpMessage::Attribute("file", filename));
+		msg.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
+		msg.addAttribute(HttpMessage::Attribute("content-length", sizeString));
+		sendMessage(msg, socket);
+		const size_t BlockSize = 2048;
+		Socket::byte buffer[BlockSize];
+		while (true)
+		{
+			FileSystem::Block blk = file.getBlock(BlockSize);
+			if (blk.size() == 0)
+				break;
+			for (size_t i = 0; i < blk.size(); ++i)
+				buffer[i] = blk[i];
+			socket.send(blk.size(), buffer);
+			if (!file.isGood())
+				break;
+		}
+		file.close();
+		return true;
 	}
-	file.close();
-	return true;
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exeception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+		return false;
+	}
 }
 HttpMessage MsgClient::startListener(int port)
 {
@@ -187,6 +211,47 @@ HttpMessage MsgClient::startListener(int port)
 		return empty;
 	}
 }
+
+std::string MsgClient::upload(int category, std::string filenames) {
+	try {
+		SocketSystem ss;
+		SocketConnecter si;
+		while (!si.connect("localhost", 8080))
+		{
+			Show::write("\n client waiting to connect");
+			::Sleep(100);
+		}
+		// send a set of messages
+		std::vector<std::string> files = split(filenames, ',');
+		std::cout << "\n  got "<< files.size() <<" files to send";
+
+		int count = 0;
+		for (std::string file : files) {
+			if (sendFile(file, si, category)) {
+				std::cout << "\n  sent file: " << file;
+				count++;
+			}
+			else {
+				std::cout << "\n  failed to send file: " << file;
+			}
+		}
+		std::cout << "\n  sent " << count << " files";
+
+		std::string res("");
+		res.append(std::to_string(count)); res.append("/"); res.append(std::to_string(files.size()));
+		res.append(" files sent to server for category: "); res.append(std::to_string(category));
+		return std::string(res);
+	}
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+		return std::string("Caught exception");
+	}
+}
+
+
 std::string MsgClient::publish(int category)
 {
 	try {
@@ -298,81 +363,6 @@ std::string MsgClient::display(int category)
 		return std::string("Caught exception");
 	}
 }
-//----< this defines the behavior of the client >--------------------
-
-void MsgClient::execute(const size_t TimeBetweenMessages, const size_t NumMessages)
-{
-	// send NumMessages messages
-
-	ClientCounter counter;
-	size_t myCount = counter.count();
-	std::string myCountString = Utilities::Converter<size_t>::toString(myCount);
-
-	Show::attach(&std::cout);
-	Show::start();
-
-	Show::title(
-		"Starting HttpMessage client" + myCountString +
-		" on thread " + Utilities::Converter<std::thread::id>::toString(std::this_thread::get_id())
-	);
-	try
-	{
-		SocketSystem ss;
-		SocketConnecter si;
-		while (!si.connect("localhost", 8080))
-		{
-			Show::write("\n client waiting to connect");
-			::Sleep(100);
-		}
-
-		// send a set of messages
-
-		HttpMessage msg;
-
-		for (size_t i = 0; i < NumMessages; ++i)
-		{
-			std::string msgBody =
-				"<msg>Message #" + Converter<size_t>::toString(i + 1) +
-				" from client #" + myCountString + "</msg>";
-			msg = makeMessage(1, msgBody, "localhost:8080");
-			/*
-			* Sender class will need to accept messages from an input queue
-			* and examine the toAddr attribute to see if a new connection
-			* is needed.  If so, it would either close the existing connection
-			* or save it in a map[url] = socket, then open a new connection.
-			*/
-			sendMessage(msg, si);
-			Show::write("\n\n  client" + myCountString + " sent\n" + msg.toIndentedString());
-			::Sleep(TimeBetweenMessages);
-		}
-		//  send all *.cpp files from TestFiles folder
-
-		std::vector<std::string> files = FileSystem::Directory::getFiles("../TestFiles", "*.cpp");
-		for (size_t i = 0; i < files.size(); ++i)
-		{
-			Show::write("\n\n  sending file " + files[i]);
-			sendFile(files[i], si);
-		}
-
-		// shut down server's client handler
-
-		msg = makeMessage(1, "quit", "toAddr:localhost:8080");
-		sendMessage(msg, si);
-		Show::write("\n\n  client" + myCountString + " sent\n" + msg.toIndentedString());
-
-		Show::write("\n");
-		Show::write("\n  All done folks");
-	}
-	catch (std::exception& exc)
-	{
-		Show::write("\n  Exeception caught: ");
-		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
-		Show::write(exMsg);
-	}
-}
-
-
-
 
 //----< entry point - runs two clients each on its own thread >------
 

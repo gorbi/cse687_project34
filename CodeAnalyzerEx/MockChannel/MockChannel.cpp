@@ -16,21 +16,6 @@
 
 using BQueue = Async::BlockingQueue < Message >;
 
-#include <sstream>
-#include <vector>
-#include <iterator>
-
-std::vector<std::string> split(const std::string &s, char delim) {
-	std::stringstream ss;
-	ss.str(s);
-	std::string item;
-	std::vector<std::string> elems;
-	while (std::getline(ss, item, delim)) {
-		elems.push_back(item);
-	}
-	return elems;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // Sendr class
 // - accepts messages from client for consumption by MockChannel
@@ -128,6 +113,18 @@ void MockChannel::start()
 	  else if (m[0] == "DISPLAY") {
 		  res = c.display(std::stoi(m[1]));
 		  res = "DISPLAY," + res;
+	  }
+	  else if (m[0] == "UPLOAD") {
+		  std::string files;
+		  int actualsize = m.size() - 1;
+		  for (int i = 2; i < actualsize; i++) {
+			  files += m[i] + ",";
+		  }
+		  files.pop_back();
+		  res = c.upload(std::stoi(m[1]),files);
+		  std::cout << "\n   got response: " << res;
+		  res = "UPLOAD," + res;
+		  std::cout << "\n   sent response: " << res;
 	  }
 
       std::cout << "\n  channel enQing message";
