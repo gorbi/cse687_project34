@@ -275,13 +275,29 @@ std::string MsgClient::download(int category, std::string filenames) {
 			std::string r("");
 			r.append("Server successfully sent "); r.append(res.findValue("RESULT")); r.append("/");
 		
-			if (filenames != "ALL")
+			if (filenames != "ALL") {
 				r.append(std::to_string(files.size()));
-			else
+				//check if exist and open
+				for (std::string file : files)
+					if (FileSystem::File::exists(getClientDownloadDir(category) + file)) {
+						std::string path = "file:///" + FileSystem::Path::getFullFileSpec(getClientDownloadDir(category) + file);
+						std::string command("start \"\" \"" + path + "\"");//open start file i.e. home page
+						std::system(command.c_str());
+					}
+			}
+			else {
 				r.append("ALL");
+				//check if index.htm was download successfully and open it
+				if (FileSystem::File::exists(getClientDownloadDir(category) + "index.htm")) {
+					std::string path = "file:///" + FileSystem::Path::getFullFileSpec(getClientDownloadDir(category) + "index.htm");
+					std::string command("start \"\" \"" + path + "\"");//open start file i.e. home page
+					std::system(command.c_str());
+				}
+			}
 
 			r.append(" files for the category: "); r.append(res.findValue("CATEGORY"));
 			std::cout << "\n  got response: " << r;
+
 			return r;
 		}
 		else {

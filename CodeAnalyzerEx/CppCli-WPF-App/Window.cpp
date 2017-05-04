@@ -591,6 +591,13 @@ int main(array<System::String^>^ args)
   System::Object^ a;
   System::Windows::RoutedEventArgs^ b;
 
+  /*window->hRadioCategoryPM1->IsChecked = true;
+  window->deleteCategory(a, b);
+  window->hRadioCategoryPM2->IsChecked = true;
+  window->deleteCategory(a, b);
+  window->hRadioCategoryPM3->IsChecked = true;
+  window->deleteCategory(a, b);*/
+
   System::Console::WriteLine("\n Requirement 9 : Automated Unit Test");
 
   System::Console::WriteLine("\n Requirement 5, 6, 7 & 8 : Upload files from ..\\XmlDocument\\ directory to category 1 sandbox of remote code publisher");
