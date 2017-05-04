@@ -585,18 +585,23 @@ int main(array<System::String^>^ args)
 
   System::Console::WriteLine("\n Requirement 9 : Automated Unit Test");
 
-  System::Console::WriteLine("\n Requirement 5 : Upload files from ..\\XmlDocument\\ directory to category 1 sandbox of remote code publisher");
+  System::Console::WriteLine("\n Requirement 7 : Except UPLOAD functionality, everything use HTTP style messages via synchronous request/response messaging");
+
+  System::Console::WriteLine("\n Requirement 5, 6 & 7 : Upload files from ..\\XmlDocument\\ directory to category 1 sandbox of remote code publisher");
   window->directorySearch("..\\XmlDocument\\");
   window->hRadioCategoryUFL1->IsChecked = true;
   window->uploadFileList(a, b);
 
-  System::Console::WriteLine("\n Requirement 3 & 4 : Run code publisher in category 1 sandbox of remote code publisher");
+  System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Run code publisher in category 1 sandbox of remote code publisher");
   window->hRadioCategoryPM1->IsChecked = true;
   window->sendMessage(a, b);
 
-  System::Console::WriteLine("\n Requirement 5 : Display the files which are published in the category 1 sandbox of remote code publisher");
+  System::Console::WriteLine("\n Requirement 5, 6 & 7 : Display the files which are published in the category 1 sandbox of remote code publisher");
   window->hRadioCategoryDFL1->IsChecked = true;
   window->displayFilesForCategory(a, b);
+
+  System::Console::WriteLine("\n Requirement 7 : Only UPLOAD functionality use HTTP style messages via asynchronous one-way messaging");
+
 
   app->Run(window);
   Console::WriteLine(L"\n\n");
