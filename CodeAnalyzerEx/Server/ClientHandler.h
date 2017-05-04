@@ -42,8 +42,8 @@
 #include "../Cpp11-BlockingQueue/Cpp11-BlockingQueue.h"
 #include "../Logger/Logger.h"
 #include "../Utilities/Utilities.h"
-#include <string>
-#include <iostream>
+#include <iostream>   // std::cout
+#include <string>     // std::string, std::stoi
 
 using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
@@ -69,7 +69,7 @@ public:
 private:
 	bool connectionClosed_;
 	HttpMessage readMessage(Socket& socket);
-	bool readFile(const std::string& filename, size_t fileSize, Socket& socket);
+	bool readFile(int category, const std::string& filename, size_t fileSize, Socket& socket);
 	Async::BlockingQueue<HttpMessage>& msgQ_;
 };
 //----< this defines processing to frame messages >------------------
@@ -117,7 +117,7 @@ HttpMessage ClientHandler::readMessage(Socket& socket)
 			else
 				return msg;
 
-			readFile(filename, contentSize, socket);
+			readFile(std::stoi(msg.findValue("CATEGORY")), filename, contentSize, socket);
 		}
 
 		if (filename != "")
@@ -150,15 +150,38 @@ HttpMessage ClientHandler::readMessage(Socket& socket)
 	}
 	return msg;
 }
+
+std::string getRemoteCodePublishedDir(int category) {
+	switch (category) {
+	case 1:
+		return "..\\RemoteCodePublished\\Category1\\";
+	case 2:
+		return "..\\RemoteCodePublished\\Category2\\";
+	default:
+		return "..\\RemoteCodePublished\\Category3\\";
+	}
+}
+
+std::string getRemoteCodeDir(int category) {
+	switch (category) {
+	case 1:
+		return "..\\RemoteCode\\Category1\\";
+	case 2:
+		return "..\\RemoteCode\\Category2\\";
+	default:
+		return "..\\RemoteCode\\Category3\\";
+	}
+}
+
 //----< read a binary file from socket and save >--------------------
 /*
 * This function expects the sender to have already send a file message,
 * and when this function is running, continuosly send bytes until
 * fileSize bytes have been sent.
 */
-bool ClientHandler::readFile(const std::string& filename, size_t fileSize, Socket& socket)
+bool ClientHandler::readFile(int category, const std::string& filename, size_t fileSize, Socket& socket)
 {
-	std::string fqname = "../TestFiles/" + filename + ".snt";
+	std::string fqname = getRemoteCodeDir(category) + filename;
 	FileSystem::File file(fqname);
 	file.open(FileSystem::File::out, FileSystem::File::binary);
 	if (!file.isGood())

@@ -109,9 +109,9 @@ void CodePublisher::fileList(std::vector<std::string> listOfFiles, std::unordere
 		strBuff << "</body>\n";
 		strBuff << "</html>";
 		strBuff.close();
-		std::string path = "file:///" + FileSystem::Path::getFullFileSpec(htmlFilePath + "index.htm");
-		std::string command("start \"\" \"" + path + "\"");//open start file i.e. home page
-		std::system(command.c_str());
+		//std::string path = "file:///" + FileSystem::Path::getFullFileSpec(htmlFilePath + "index.htm");
+		//std::string command("start \"\" \"" + path + "\"");//open start file i.e. home page
+		//std::system(command.c_str());
 	}
 }
 
