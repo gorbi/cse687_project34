@@ -96,7 +96,6 @@ namespace CppCliWindows
     StatusBarItem^ hStatusBarItem = gcnew StatusBarItem();
     TextBlock^ hStatus = gcnew TextBlock(); Grid^ grid = gcnew Grid();
 
-	RadioButton^ hRadioCategoryDFL1 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryDFL2 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryDFL3 = gcnew RadioButton();
 
@@ -107,7 +106,6 @@ namespace CppCliWindows
     Button^ hClearButton = gcnew Button();
     TextBlock^ hTextBlock1 = gcnew TextBlock();
     ScrollViewer^ hScrollViewer1 = gcnew ScrollViewer();
-	RadioButton^ hRadioCategoryPM1 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryPM2 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryPM3 = gcnew RadioButton();
 
@@ -148,7 +146,6 @@ namespace CppCliWindows
     void setUpSendMessageView();
     void setUpFileListView();
     void setUpConnectionView();
-
     void sendMessage(Object^ obj, RoutedEventArgs^ args);
     void addText(String^ msg);
     void getMessage();
@@ -163,6 +160,8 @@ namespace CppCliWindows
 	ListBox^ hListBox = gcnew ListBox();
 	void directorySearch(String^);
 	RadioButton^ hRadioCategoryUFL1 = gcnew RadioButton();
+	RadioButton^ hRadioCategoryPM1 = gcnew RadioButton();
+	RadioButton^ hRadioCategoryDFL1 = gcnew RadioButton();
   private:
     std::string toStdString(String^ pStr);
     String^ toSystemString(std::string& str);

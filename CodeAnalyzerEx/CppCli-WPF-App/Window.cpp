@@ -575,7 +575,7 @@ void WPFCppCliDemo::Unloading(Object^ sender, System::ComponentModel::CancelEven
 //int _stdcall WinMain()
 int main(array<System::String^>^ args)
 {
-  Console::WriteLine(L"\n Starting WPFCppCliDemo");
+  Console::WriteLine(L"\n Requirement 1: Starting WPFCppCliDemo GUI");
 
   Application^ app = gcnew Application();
   WPFCppCliDemo^ window = gcnew WPFCppCliDemo();
@@ -589,6 +589,14 @@ int main(array<System::String^>^ args)
   window->directorySearch("..\\XmlDocument\\");
   window->hRadioCategoryUFL1->IsChecked = true;
   window->uploadFileList(a, b);
+
+  System::Console::WriteLine("\n Requirement 3 & 4 : Run code publisher in category 1 sandbox of remote code publisher");
+  window->hRadioCategoryPM1->IsChecked = true;
+  window->sendMessage(a, b);
+
+  System::Console::WriteLine("\n Requirement 5 : Display the files which are published in the category 1 sandbox of remote code publisher");
+  window->hRadioCategoryDFL1->IsChecked = true;
+  window->displayFilesForCategory(a, b);
 
   app->Run(window);
   Console::WriteLine(L"\n\n");

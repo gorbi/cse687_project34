@@ -162,7 +162,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test begin scope", *pTc);
+      //GrammarHelper::showParseDemo("Test begin scope", *pTc);
 
       // don't parse SemiExp with single semicolon token
 
@@ -190,7 +190,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("handle begin scope", *pTc);
+      //GrammarHelper::showParseDemo("handle begin scope", *pTc);
       //if (p_Repos->scopeStack().size() == 0)
       //  Repository::Demo::write("\n--- empty stack ---");
 
@@ -217,7 +217,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test end scope", *pTc);
+      //GrammarHelper::showParseDemo("Test end scope", *pTc);
 
       //std::string debug = pTc->show();
 
@@ -245,7 +245,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle end scope", *pTc);
+      //GrammarHelper::showParseDemo("Handle end scope", *pTc);
 
       //if (p_Repos->scopeStack().size() == 0)
       //{
@@ -279,7 +279,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test access spec", *pTc);
+      //GrammarHelper::showParseDemo("Test access spec", *pTc);
 
       Repository* pRepo = Repository::getInstance();
       if (pRepo->language() != Language::Cpp)
@@ -313,7 +313,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle access spec: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle access spec: ", *pTc);
 
       std::string tok = (*pTc)[pTc->length() - 2];
       Access& access = p_Repos->currentAccess();
@@ -334,7 +334,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test preproc statement: ", *pTc);
+      //GrammarHelper::showParseDemo("Test preproc statement: ", *pTc);
 
       //std::string debug = pTc->show();
 
@@ -361,13 +361,13 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle preproc statement: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle preproc statement: ", *pTc);
 
       Scanner::ITokCollection* pClone = pTc->clone();
       ASTNode* pElem = p_Repos->scopeStack().top();
       pElem->statements_.push_back(pClone);
 
-      GrammarHelper::showParse("Preproc Stmt", *pTc);
+      //GrammarHelper::showParse("Preproc Stmt", *pTc);
     }
   };
 
@@ -379,7 +379,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test namespace definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Test namespace definition: ", *pTc);
 
       const Scanner::ITokCollection& tc = *pTc;
       if (tc[tc.length() - 1] == "{")
@@ -409,7 +409,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle namespace definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle namespace definition: ", *pTc);
 
       ASTNode* top = p_Repos->scopeStack().top();
 
@@ -418,7 +418,7 @@ namespace CodeAnalysis
       top->name_ = name;
       top->package_ = p_Repos->package();
 
-      GrammarHelper::showParse("namespace def", *pTc);
+      //GrammarHelper::showParse("namespace def", *pTc);
     }
   };
 
@@ -430,7 +430,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test class definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Test class definition: ", *pTc);
 
       const Scanner::ITokCollection& tc = *pTc;
       if (tc[tc.length() - 1] == "{")
@@ -466,7 +466,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle class definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle class definition: ", *pTc);
 
       p_Repos->currentAccess() = Access::priv;
 
@@ -480,7 +480,7 @@ namespace CodeAnalysis
         top->name_ = name;
         top->package_ = p_Repos->package();
         p_Repos->AST().typeMap()[name] = top;
-        GrammarHelper::showParse("class def", *pTc);
+        //GrammarHelper::showParse("class def", *pTc);
       }
       else  // C#
       {
@@ -491,7 +491,7 @@ namespace CodeAnalysis
         top->name_ = name;
         top->package_ = p_Repos->package();
         p_Repos->AST().typeMap()[name] = top;
-        GrammarHelper::showParse("interface def", *pTc);
+        //GrammarHelper::showParse("interface def", *pTc);
       }
     }
   };
@@ -504,7 +504,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test struct definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Test struct definition: ", *pTc);
 
       const Scanner::ITokCollection& tc = *pTc;
       if (tc[tc.length() - 1] == "{")
@@ -534,7 +534,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle struct definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle struct definition: ", *pTc);
 
       p_Repos->currentAccess() = Access::publ;
 
@@ -546,7 +546,7 @@ namespace CodeAnalysis
       top->package_ = p_Repos->package();
       p_Repos->AST().typeMap()[name] = top;
 
-      GrammarHelper::showParse("struct def", *pTc);
+      //GrammarHelper::showParse("struct def", *pTc);
     }
   };
 
@@ -562,7 +562,7 @@ namespace CodeAnalysis
       if (pRepo->language() != Language::Cpp)
         return IRule::Continue;
 
-      GrammarHelper::showParseDemo("Test C++ function definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Test C++ function definition: ", *pTc);
 
       const Scanner::ITokCollection& tc = *pTc;
       std::string debug = pTc->show();
@@ -593,7 +593,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle C++ function definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle C++ function definition: ", *pTc);
 
       //std::string debug = pTc->show();
 
@@ -614,7 +614,7 @@ namespace CodeAnalysis
       top->name_ = name;
       top->package_ = p_Repos->package();
 
-      GrammarHelper::showParse("function def", *pTc);
+      //GrammarHelper::showParse("function def", *pTc);
 
       // is function an operator?
 
@@ -693,7 +693,7 @@ namespace CodeAnalysis
       if (pRepo->language() != Language::CSharp)
         return IRule::Continue;
 
-      GrammarHelper::showParseDemo("Test C# function definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Test C# function definition: ", *pTc);
 
       const Scanner::ITokCollection& tc = *pTc;
       if (tc[tc.length() - 1] == "{")
@@ -727,7 +727,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle C# function definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle C# function definition: ", *pTc);
 
       std::string debug = pTc->show();
       ASTNode* top = p_Repos->scopeStack().top();
@@ -747,7 +747,7 @@ namespace CodeAnalysis
       top->name_ = name;
       top->package_ = p_Repos->package();
 
-      GrammarHelper::showParse("function def", *pTc);
+      //GrammarHelper::showParse("function def", *pTc);
 
       // is function an operator?
 
@@ -786,7 +786,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test control definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Test control definition: ", *pTc);
 
       const Scanner::ITokCollection& tc = *pTc;
       if (tc[tc.length() - 1] == "{")
@@ -822,7 +822,7 @@ namespace CodeAnalysis
     }
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle control definition: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle control definition: ", *pTc);
 
       ASTNode* top = p_Repos->scopeStack().top();
 
@@ -833,7 +833,7 @@ namespace CodeAnalysis
       top->type_ = "control";
       top->name_ = name;
 
-      GrammarHelper::showParse("control def", *pTc);
+      //GrammarHelper::showParse("control def", *pTc);
     }
   };
 
@@ -901,7 +901,7 @@ namespace CodeAnalysis
       if (pRepo->language() != Language::Cpp)
         return IRule::Continue;
 
-      GrammarHelper::showParseDemo("Test C++ declaration: ", *pTc);
+      //GrammarHelper::showParseDemo("Test C++ declaration: ", *pTc);
       std::string debug3 = pTc->show();
 
       Scanner::SemiExp tc;
@@ -984,7 +984,7 @@ namespace CodeAnalysis
 
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle C++ declaration: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle C++ declaration: ", *pTc);
 
       // save declaration info in ASTNode
 
@@ -1004,7 +1004,7 @@ namespace CodeAnalysis
         declNode.declType_ = DeclType::usingDecl;
         pCurrNode->decl_.push_back(declNode);
 
-        GrammarHelper::showParse("using declar", *pTc);
+        //GrammarHelper::showParse("using declar", *pTc);
         return;
       }
 
@@ -1017,7 +1017,7 @@ namespace CodeAnalysis
       {
         declNode.declType_ = DeclType::dataDecl;
         pCurrNode->decl_.push_back(declNode);
-        GrammarHelper::showParse("data declar", *pTc);
+        //GrammarHelper::showParse("data declar", *pTc);
       }
     }
   };
@@ -1040,7 +1040,7 @@ namespace CodeAnalysis
       if (pRepo->language() != Language::CSharp)
         return IRule::Continue;
 
-      GrammarHelper::showParseDemo("Test C# declaration: ", *pTc);
+      //GrammarHelper::showParseDemo("Test C# declaration: ", *pTc);
 
       std::string debug = pTc->show();
       
@@ -1094,7 +1094,7 @@ namespace CodeAnalysis
 
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle C# declaration: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle C# declaration: ", *pTc);
 
       // store declaration info in ASTNode
 
@@ -1114,7 +1114,7 @@ namespace CodeAnalysis
         declNode.declType_ = DeclType::usingDecl;
         pCurrNode->decl_.push_back(declNode);
 
-        GrammarHelper::showParse("using declar", *pTc);
+        //GrammarHelper::showParse("using declar", *pTc);
         return;
       }
       //std::string debug = se.show();
@@ -1127,7 +1127,7 @@ namespace CodeAnalysis
         Access adebug = declNode.access_;
         declNode.declType_ = DeclType::functionDecl;
         pCurrNode->decl_.push_back(declNode);
-        GrammarHelper::showParse("function declar", *pTc);
+        //GrammarHelper::showParse("function declar", *pTc);
       }
       else
       {
@@ -1135,7 +1135,7 @@ namespace CodeAnalysis
         Access adebug = declNode.access_;
         declNode.declType_ = DeclType::dataDecl;
         pCurrNode->decl_.push_back(declNode);
-        GrammarHelper::showParse("data declar", *pTc);
+        //GrammarHelper::showParse("data declar", *pTc);
       }
     }
   };
@@ -1152,7 +1152,7 @@ namespace CodeAnalysis
       if (pRepo->language() != Language::Cpp)
         return IRule::Continue;
 
-      GrammarHelper::showParseDemo("Test C++ executable: ", *pTc);
+      //GrammarHelper::showParseDemo("Test C++ executable: ", *pTc);
 
       Scanner::SemiExp tc;
       tc.clone(*pTc);
@@ -1201,9 +1201,9 @@ namespace CodeAnalysis
 
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle C++ executable: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle C++ executable: ", *pTc);
 
-      GrammarHelper::showParse("executable", *pTc);
+      //GrammarHelper::showParse("executable", *pTc);
     }
   };
   ///////////////////////////////////////////////////////////////
@@ -1218,7 +1218,7 @@ namespace CodeAnalysis
       if (pRepo->language() != Language::CSharp)
         return IRule::Continue;
 
-      GrammarHelper::showParseDemo("Test C# executable: ", *pTc);
+      //GrammarHelper::showParseDemo("Test C# executable: ", *pTc);
 
       const Scanner::ITokCollection& in = *pTc;
       Scanner::SemiExp tc;
@@ -1268,13 +1268,13 @@ namespace CodeAnalysis
 
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle C# executable: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle C# executable: ", *pTc);
 
       Scanner::SemiExp se;
       se.clone(*pTc);
       GrammarHelper::removeComments(se);
 
-      GrammarHelper::showParse("executable", se);
+      //GrammarHelper::showParse("executable", se);
     }
   };
   ///////////////////////////////////////////////////////////////
@@ -1287,7 +1287,7 @@ namespace CodeAnalysis
   public:
     bool doTest(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Test default: ", *pTc);
+      //GrammarHelper::showParseDemo("Test default: ", *pTc);
 
       doActions(pTc);  // catches everything
       return IRule::Stop;
@@ -1305,8 +1305,8 @@ namespace CodeAnalysis
 
     void doAction(const Scanner::ITokCollection* pTc) override
     {
-      GrammarHelper::showParseDemo("Handle default: ", *pTc);
-      GrammarHelper::showParse("default: ", *pTc);
+      //GrammarHelper::showParseDemo("Handle default: ", *pTc);
+      //GrammarHelper::showParse("default: ", *pTc);
     }
   };
 }
