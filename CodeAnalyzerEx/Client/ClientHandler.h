@@ -69,7 +69,7 @@ public:
 private:
 	bool connectionClosed_;
 	HttpMessage readMessage(Socket& socket);
-	bool readFile(const std::string& filename, size_t fileSize, Socket& socket);
+	bool readFile(const std::string& filename, size_t fileSize, Socket& socket, int category);
 	Async::BlockingQueue<HttpMessage>& msgQ_;
 };
 //----< this defines processing to frame messages >------------------
@@ -117,7 +117,7 @@ HttpMessage ClientHandler::readMessage(Socket& socket)
 			else
 				return msg;
 
-			readFile(filename, contentSize, socket);
+			readFile(filename, contentSize, socket, std::stoi(msg.findValue("CATEGORY")));
 		}
 
 		if (filename != "")
@@ -150,15 +150,27 @@ HttpMessage ClientHandler::readMessage(Socket& socket)
 	}
 	return msg;
 }
+
+std::string getClientDownloadDir(int category) {
+	switch (category) {
+	case 1:
+		return "..\\ClientDownloads\\Category1\\";
+	case 2:
+		return "..\\ClientDownloads\\Category2\\";
+	default:
+		return "..\\ClientDownloads\\Category3\\";
+	}
+}
+
 //----< read a binary file from socket and save >--------------------
 /*
 * This function expects the sender to have already send a file message,
 * and when this function is running, continuosly send bytes until
 * fileSize bytes have been sent.
 */
-bool ClientHandler::readFile(const std::string& filename, size_t fileSize, Socket& socket)
+bool ClientHandler::readFile(const std::string& filename, size_t fileSize, Socket& socket, int category)
 {
-	std::string fqname = "../TestFiles/" + filename + ".snt";
+	std::string fqname = getClientDownloadDir(category) + filename;
 	FileSystem::File file(fqname);
 	file.open(FileSystem::File::out, FileSystem::File::binary);
 	if (!file.isGood())
