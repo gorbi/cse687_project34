@@ -87,6 +87,7 @@ public:
 	std::string remove(int);
 	std::string display(int);
 	std::string upload(int category, std::string filenames);
+	std::string download(int category, std::string filenames);
 private:
 	HttpMessage makeMessage(size_t n, const std::string& msgBody, const EndPoint& ep);
 	void sendMessage(HttpMessage& msg, Socket& socket);
@@ -159,8 +160,8 @@ bool MsgClient::sendFile(const std::string& fqname, Socket& socket, int category
 
 		HttpMessage msg = makeMessage(1, "", "localhost::8080");
 		msg.addAttribute(HttpMessage::Attribute("file", filename));
-		msg.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
 		msg.addAttribute(HttpMessage::Attribute("content-length", sizeString));
+		msg.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
 		sendMessage(msg, socket);
 		const size_t BlockSize = 2048;
 		Socket::byte buffer[BlockSize];
@@ -209,6 +210,91 @@ HttpMessage MsgClient::startListener(int port)
 		Show::write(exMsg);
 		HttpMessage empty;
 		return empty;
+	}
+}
+
+HttpMessage startDownloadListener(int port) {
+	Async::BlockingQueue<HttpMessage> msgQ;
+
+	try
+	{
+		SocketSystem ss;
+		SocketListener sl(port, Socket::IP6);
+		ClientHandler cp(msgQ);
+		sl.start(cp);
+		/*
+		* Since this is a server the loop below never terminates.
+		* We could easily change that by sending a distinguished
+		* message for shutdown.
+		*/
+		HttpMessage msg;
+		while (true)
+		{
+			msg = msgQ.deQ();
+			if (msg.bodyString().find("<file>") != std::string::npos && msg.bodyString().find("</file>") != std::string::npos)
+				continue;
+			else
+				break;
+		}
+		return msg;
+	}
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exeception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+		HttpMessage empty;
+		return empty;
+	}
+}
+
+std::string MsgClient::download(int category, std::string filenames) {
+	try {
+		SocketSystem ss;
+		SocketConnecter si;
+		while (!si.connect("localhost", 8080))
+		{
+			Show::write("\n client waiting to connect");
+			::Sleep(100);
+		}
+		// send a set of messages
+		std::vector<std::string> files = split(filenames, ',');
+		if (filenames != "ALL")
+			std::cout << "\n  got " << files.size() << " files to download";
+		else
+			std::cout << "\n  got ALL files to download";
+
+		HttpMessage msg;
+		msg = makeMessage(1, "DOWNLOAD", "toAddr:localhost:8080");
+		msg.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
+		msg.addAttribute(HttpMessage::attribute("FILES", filenames));
+		sendMessage(msg, si);
+
+		HttpMessage res = startDownloadListener(8081);
+		if (res.bodyString() == "DOWNLOAD") {
+			std::string r("");
+			r.append("Server successfully sent "); r.append(res.findValue("RESULT")); r.append("/");
+		
+			if (filenames != "ALL")
+				r.append(std::to_string(files.size()));
+			else
+				r.append("ALL");
+
+			r.append(" files for the category: "); r.append(res.findValue("CATEGORY"));
+			std::cout << "\n  got response: " << r;
+			return r;
+		}
+		else {
+			return std::string("Server failed to send files for the category: " + res.findValue("CATEGORY"));
+		}
+
+	}
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+		return std::string("Caught exception");
 	}
 }
 

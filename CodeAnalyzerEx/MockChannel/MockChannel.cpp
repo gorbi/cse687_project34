@@ -100,6 +100,7 @@ void MockChannel::start()
     {
       std::cout << "\n  channel deQing message";
       Message msg = sendQ.deQ();  // will block here so send quit message when stopping
+	  std::cout << "\n  channel got message: " << msg;
 	  Message res;
 	  std::vector<std::string> m = split(msg, ',');
 	  if (m[0] == "PUBLISH") {
@@ -124,6 +125,24 @@ void MockChannel::start()
 		  res = c.upload(std::stoi(m[1]),files);
 		  std::cout << "\n   got response: " << res;
 		  res = "UPLOAD," + res;
+		  std::cout << "\n   sent response: " << res;
+	  }
+	  else if (m[0] == "DOWNLOAD") {
+		  if (m[2] != "ALL") {
+			  std::string files;
+			  int actualsize = m.size() - 1;
+			  for (int i = 2; i < actualsize; i++) {
+				  files += m[i] + ",";
+			  }
+			  files.pop_back();
+			  res = c.download(std::stoi(m[1]), files);
+		  }
+		  else {
+			  res = c.download(std::stoi(m[1]), std::string("ALL"));
+		  }
+		  
+		  std::cout << "\n   got response: " << res;
+		  res = "DOWNLOAD," + res;
 		  std::cout << "\n   sent response: " << res;
 	  }
 

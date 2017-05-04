@@ -46,6 +46,17 @@ using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
 using EndPoint = std::string;
 
+std::vector<std::string> split(const std::string &s, char delim) {
+	std::stringstream ss;
+	ss.str(s);
+	std::string item;
+	std::vector<std::string> elems;
+	while (std::getline(ss, item, delim)) {
+		elems.push_back(item);
+	}
+	return elems;
+}
+
 //----< factory for creating messages >------------------------------
 /*
 * This function only creates one type of message for this demo.
@@ -96,106 +107,48 @@ void sendMessage(HttpMessage& msg, Socket& socket)
 *   has been sent.
 * - Sends in binary mode which works for either text or binary.
 */
-bool sendFile(const std::string& filename, Socket& socket)
+bool sendFile(const std::string& fqname, Socket& socket, int category)
 {
 	// assumes that socket is connected
-
-	std::string fqname = "../TestFiles/" + filename;
-	FileSystem::FileInfo fi(fqname);
-	size_t fileSize = fi.size();
-	std::string sizeString = Converter<size_t>::toString(fileSize);
-	FileSystem::File file(fqname);
-	file.open(FileSystem::File::in, FileSystem::File::binary);
-	if (!file.isGood())
-		return false;
-
-	HttpMessage msg = makeMessage(1, "", "localhost::8081");
-	msg.addAttribute(HttpMessage::Attribute("file", filename));
-	msg.addAttribute(HttpMessage::Attribute("content-length", sizeString));
-	sendMessage(msg, socket);
-	const size_t BlockSize = 2048;
-	Socket::byte buffer[BlockSize];
-	while (true)
-	{
-		FileSystem::Block blk = file.getBlock(BlockSize);
-		if (blk.size() == 0)
-			break;
-		for (size_t i = 0; i < blk.size(); ++i)
-			buffer[i] = blk[i];
-		socket.send(blk.size(), buffer);
+	try {
+		std::cout << "\n  request to send file: " << fqname;
+		std::string filename = FileSystem::Path::getName(fqname);
+		FileSystem::FileInfo fi(fqname);
+		size_t fileSize = fi.size();
+		std::string sizeString = Converter<size_t>::toString(fileSize);
+		FileSystem::File file(fqname);
+		file.open(FileSystem::File::in, FileSystem::File::binary);
 		if (!file.isGood())
-			break;
-	}
-	file.close();
-	return true;
-}
+			return false;
 
-//----< this defines the behavior of the client >--------------------
-
-void execute(const size_t TimeBetweenMessages, const size_t NumMessages)
-{
-	// send NumMessages messages
-	Show::attach(&std::cout);
-	Show::start();
-
-	Show::title(
-		"Starting HttpMessage client on thread " + Utilities::Converter<std::thread::id>::toString(std::this_thread::get_id())
-	);
-	try
-	{
-		SocketSystem ss;
-		SocketConnecter si;
-		while (!si.connect("localhost", 8081))
+		HttpMessage msg = makeMessage(1, "", "localhost::8081");
+		msg.addAttribute(HttpMessage::Attribute("file", filename));
+		msg.addAttribute(HttpMessage::Attribute("content-length", sizeString));
+		msg.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
+		sendMessage(msg, socket);
+		const size_t BlockSize = 2048;
+		Socket::byte buffer[BlockSize];
+		while (true)
 		{
-			Show::write("\n client waiting to connect");
-			::Sleep(100);
+			FileSystem::Block blk = file.getBlock(BlockSize);
+			if (blk.size() == 0)
+				break;
+			for (size_t i = 0; i < blk.size(); ++i)
+				buffer[i] = blk[i];
+			socket.send(blk.size(), buffer);
+			if (!file.isGood())
+				break;
 		}
-
-		// send a set of messages
-
-		HttpMessage msg;
-
-		for (size_t i = 0; i < NumMessages; ++i)
-		{
-			std::string msgBody =
-				"<msg>Message #" + Converter<size_t>::toString(i + 1) +
-				" from client </msg>";
-			msg = makeMessage(1, msgBody, "localhost:8081");
-			/*
-			* Sender class will need to accept messages from an input queue
-			* and examine the toAddr attribute to see if a new connection
-			* is needed.  If so, it would either close the existing connection
-			* or save it in a map[url] = socket, then open a new connection.
-			*/
-			sendMessage(msg, si);
-			Show::write("\n\n  client sent\n" + msg.toIndentedString());
-			::Sleep(TimeBetweenMessages);
-		}
-		//  send all *.cpp files from TestFiles folder
-
-		std::vector<std::string> files = FileSystem::Directory::getFiles("../TestFiles", "*.cpp");
-		for (size_t i = 0; i < files.size(); ++i)
-		{
-			Show::write("\n\n  sending file " + files[i]);
-			sendFile(files[i], si);
-		}
-
-		// shut down server's client handler
-
-		msg = makeMessage(1, "quit", "toAddr:localhost:8081");
-		sendMessage(msg, si);
-		Show::write("\n\n  client sent\n" + msg.toIndentedString());
-
-		Show::write("\n");
-		Show::write("\n  All done folks");
+		file.close();
+		return true;
 	}
 	catch (std::exception& exc)
 	{
 		Show::write("\n  Exeception caught: ");
 		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
 		Show::write(exMsg);
+		return false;
 	}
-
 }
 
 int publishCode(int category) {
@@ -424,6 +377,56 @@ void processDisplayRequest(int category) {
 	}
 }
 
+void processDownloadRequest(int category, std::string files) {
+	Show::write("\n\n  server recvd download request for category: " + std::to_string(category));
+
+	Show::write("\n\n  server sending files for category: " + std::to_string(category));
+	Show::write("\n\n  files: " + files);
+
+	try {
+
+		SocketSystem ss;
+		SocketConnecter si;
+		while (!si.connect("localhost", 8081))
+		{
+			Show::write("\n client waiting to connect");
+			::Sleep(100);
+		}
+
+		int count = 0;
+
+		std::vector<std::string> filesPub;
+		if (files == "ALL") {
+			filesPub = FileSystem::Directory::getFiles(getRemoteCodePublishedDir(category), "*.*");
+		}
+		else {
+			filesPub = split(files, ',');
+		}
+		Show::write("\n  ");
+		Show::write(std::to_string(filesPub.size()) + " files were asked by client");
+		for (std::string file : filesPub) {
+			if (sendFile(getRemoteCodePublishedDir(category) + file, si, category)) {
+				count++;
+			}
+		}
+		Show::write("\n  ");
+		Show::write(std::to_string(count) + " files were sent by server");
+		Show::write("\n  files were sent for category: " + std::to_string(category));
+
+		// send a set of messages
+		HttpMessage res = makeMessage(1, "DOWNLOAD", "toAddr:localhost:8081");
+		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
+		res.addAttribute(HttpMessage::attribute("RESULT", std::to_string(count)));
+		sendMessage(res, si);
+	}
+	catch (std::exception& exc)
+	{
+		Show::write("\n  Exeception caught: ");
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		Show::write(exMsg);
+	}
+}
+
 
 //----< entry point - runs two clients each on its own thread >------
 int main()
@@ -456,6 +459,8 @@ int main()
 				processDeleteRequest(std::stoi(msg.findValue("CATEGORY")));
 			} else if (msg.bodyString() == "DISPLAY") {
 				processDisplayRequest(std::stoi(msg.findValue("CATEGORY")));
+			} else if (msg.bodyString() == "DOWNLOAD") {
+				processDownloadRequest(std::stoi(msg.findValue("CATEGORY")), msg.findValue("FILES"));
 			}
 		}
 	}

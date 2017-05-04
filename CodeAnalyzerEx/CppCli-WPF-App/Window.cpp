@@ -286,7 +286,7 @@ String^ WPFCppCliDemo::toSystemString(std::string& str)
 void WPFCppCliDemo::addText(String^ msg)
 {
   array<String^>^ array = msg->Split(',');
-  if (array[0] == "PUBLISH" || array[0] == "DELETE" || array[0] == "UPLOAD") {
+  if (array[0] == "PUBLISH" || array[0] == "DELETE" || array[0] == "UPLOAD" || array[0] == "DOWNLOAD") {
 	  hTextBlock1->Text += array[1] + "\n";
   }
   else if (array[0] == "DISPLAY") {
@@ -331,8 +331,6 @@ void WPFCppCliDemo::uploadFileList(Object^ sender, RoutedEventArgs^ args)
 
 	if (category == -1 || hListBox->Items->Count <= 0)
 		return;
-
-
 
 	std::cout << toStdString("\n invoked upload for category: " + category);
 	String^ files;
@@ -489,9 +487,22 @@ void CppCliWindows::WPFCppCliDemo::downloadFilesForCategory(Object ^ sender, Rou
 		return;
 
 	std::cout << toStdString("\n invoked download for category: " + category);
+	String^ files;
 	for each (String^ item in hDListBox->SelectedItems) {
-		std::cout << "\n downloading: " + toStdString(item);
+		files += item + ",";
+		std::cout << toStdString("\n downloading file: " + item);
 	}
+	if (hDListBox->SelectedItems->Count > 0) {
+		files += "END";
+		pSendr_->postMessage(toStdString("DOWNLOAD," + category + "," + files));
+	}
+	else {
+		pSendr_->postMessage(toStdString("DOWNLOAD," + category + ",ALL"));
+	}
+
+	Console::Write("DOWNLOAD FROM " + category + "\n");
+	hStatus->Text = "DOWNLOAD FROM " + category;
+
 }
 void CppCliWindows::WPFCppCliDemo::deleteCategory(Object ^ sender, RoutedEventArgs ^ args)
 {
