@@ -60,7 +60,9 @@ class Server
 public:
 	void start(int port);
 	void stop();
+	Server(std::string httpurl);
 private:
+	std::string iisHttpUrl;
 	Async::BlockingQueue<HttpMessage> msgQ;
 	void processDownloadRequest(int category, std::string files, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap);
 	void processDisplayRequest(int category);

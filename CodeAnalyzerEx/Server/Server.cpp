@@ -219,6 +219,9 @@ void Server::processPublishRequest(int category, std::unordered_map<std::string,
 		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
 		if (result == 0) {
 			res.addAttribute(HttpMessage::attribute("RESULT", "SUCCESS"));
+			std::string url(iisHttpUrl + std::to_string(category));
+			url += "/index.htm";
+			res.addAttribute(HttpMessage::attribute("IISURL", url));
 			//showDepdencyMap(dependencyMap);
 		}
 		else
@@ -404,7 +407,7 @@ int main()
 	Show::attach(&std::cout);
 	Show::start();
 	Show::title("\n  HttpMessage Server started");
-	Server s;
+	Server s("http://localhost:8091/Category");
 	s.start(8080);
 	//s.stop();
 
@@ -460,4 +463,9 @@ void Server::start(int port)
 void Server::stop()
 {
 	msgQ.enQ(makeMessage(1, "QUIT", "toAddr:localhost:8080"));
+}
+
+Server::Server(std::string iisHttpUrl)
+{
+	this->iisHttpUrl = iisHttpUrl;
 }

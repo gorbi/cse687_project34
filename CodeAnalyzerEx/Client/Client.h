@@ -377,8 +377,13 @@ std::string MsgClient::publish(int category)
 		sendMessage(msg, si);
 		HttpMessage res = startListener(8081);
 		if (res.bodyString() == "PUBLISH") {
-			if (res.findValue("RESULT")=="SUCCESS")
-				return std::string("Server successfully published files in category: "+ res.findValue("CATEGORY"));
+			if (res.findValue("RESULT") == "SUCCESS") {
+				std::string a("Server successfully published files in category: " + res.findValue("CATEGORY"));
+				a += ",IIS URL: " + res.findValue("IISURL");
+				std::string command("start \"\" \"" + res.findValue("IISURL") + "\"");//open start file i.e. home page
+				std::system(command.c_str());
+				return a;
+			}
 			else
 				return std::string("Server failed to publish files in category: " + res.findValue("CATEGORY"));
 		}

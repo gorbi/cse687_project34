@@ -294,6 +294,8 @@ void WPFCppCliDemo::addText(String^ msg)
   array<String^>^ array = msg->Split(',');
   if (array[0] == "PUBLISH" || array[0] == "DELETE" || array[0] == "UPLOAD" || array[0] == "DOWNLOAD") {
 	  hTextBlock1->Text += array[1] + "\n";
+	  if (array[0] == "PUBLISH")
+		  hTextBlock1->Text += array[2] + "\n";
   }
   else if (array[0] == "DISPLAY") {
 	  hDListBox->Items->Clear();
@@ -609,6 +611,7 @@ int main(array<System::String^>^ args)
   System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Run code publisher in category 1 sandbox of remote code publisher");
   window->hRadioCategoryPM1->IsChecked = true;
   window->sendMessage(a, b);
+  System::Console::WriteLine("\n Requirement 11 : IIS URL to access index published in category 1 sandbox of remote code publisher");
 
   window->hListBox->Items->Clear();
   System::Console::WriteLine("\n Requirement 5, 6 & 7 : Upload files from ..\\Analyzer\\ directory to category 2 sandbox of remote code publisher");
@@ -619,6 +622,7 @@ int main(array<System::String^>^ args)
   System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Run code publisher in category 2 sandbox of remote code publisher");
   window->hRadioCategoryPM2->IsChecked = true;
   window->sendMessage(a, b);
+  System::Console::WriteLine("\n Requirement 11 : IIS URL to access index published in category 2 sandbox of remote code publisher");
 
   System::Console::WriteLine("\n Requirement 5, 6 & 7 : Display the files which are published in the category 2 sandbox of remote code publisher");
   window->hRadioCategoryDFL2->IsChecked = true;
@@ -649,6 +653,7 @@ int main(array<System::String^>^ args)
   System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Run code publisher in category 3 sandbox of remote code publisher");
   window->hRadioCategoryPM3->IsChecked = true;
   window->sendMessage(a, b);
+  System::Console::WriteLine("\n Requirement 11 : IIS URL to access index published in category 3 sandbox of remote code publisher");
 
   System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Lazy download the file: Test3.cpp.htm which has no parents or dependencies");
   window->downloadFilesForCategory(3, "Test3.cpp.htm");
