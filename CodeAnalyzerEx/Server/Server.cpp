@@ -39,6 +39,7 @@
 #include <string>
 #include <iostream>
 #include <thread>
+#include <set>
 #include "ClientHandler.h"
 #include "../Analyzer/Executive.h"
 
@@ -55,6 +56,16 @@ std::vector<std::string> split(const std::string &s, char delim) {
 		elems.push_back(item);
 	}
 	return elems;
+}
+
+void showDepdencyMap(std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
+	std::cout << "\n   Values in dependency map are";
+	for (auto const& kv : dependencyMap) {
+		std::cout << "\n  key: " << kv.first;
+		for (std::string value : kv.second) {
+			std::cout << "\n  value: " << value;
+		}
+	}
 }
 
 //----< factory for creating messages >------------------------------
@@ -151,7 +162,7 @@ bool sendFile(const std::string& fqname, Socket& socket, int category)
 	}
 }
 
-int publishCode(int category) {
+int publishCode(int category, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 
 	char * argv[7];
 	std::string x[] = { "CodeAnalyzer.exe",getRemoteCodeDir(category),"*.h","*.cpp","/m","/f","/r" };
@@ -215,6 +226,20 @@ int publishCode(int category) {
 		for (File file : allsubfiles)
 			da.doDepAnal(ta, file);
 
+		NoSqlDb<std::string> db = da.getDb();
+		std::vector<std::string> files = db.keys();
+		for (std::string file : files) {
+			Element<std::string> elem = db.value(file);
+			std::vector<std::string> fqnames = elem.children;
+			if (fqnames.size() > 0) {
+				std::vector<std::string> filenames;
+				for (std::string fqname : fqnames) {
+					filenames.push_back(FileSystem::Path::getName(fqname)+".htm");
+				}
+				dependencyMap[std::to_string(category) + "," + FileSystem::Path::getName(file)+".htm"] = filenames;
+			}
+		}
+
 		//Invoke code publisher
 		CodePublisher cPub(da);
 		cPub.htmlFilePath = getRemoteCodePublishedDir(category);
@@ -233,10 +258,10 @@ int publishCode(int category) {
 	return 0;
 }
 
-void processPublishRequest(int category) {
+void processPublishRequest(int category, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 	Show::write("\n\n  server recvd publish request for category: " + std::to_string(category));
 
-	int result = publishCode(category);
+	int result = publishCode(category, dependencyMap);
 
 	try {
 		SocketSystem ss;
@@ -250,8 +275,10 @@ void processPublishRequest(int category) {
 		// send a set of messages
 		HttpMessage res = makeMessage(1, "PUBLISH", "toAddr:localhost:8081");
 		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
-		if (result == 0)
+		if (result == 0) {
 			res.addAttribute(HttpMessage::attribute("RESULT", "SUCCESS"));
+			showDepdencyMap(dependencyMap);
+		}
 		else
 			res.addAttribute(HttpMessage::attribute("RESULT", "FAILURE"));
 		sendMessage(res, si);
@@ -377,7 +404,7 @@ void processDisplayRequest(int category) {
 	}
 }
 
-void processDownloadRequest(int category, std::string files) {
+void processDownloadRequest(int category, std::string files, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 	Show::write("\n\n  server recvd download request for category: " + std::to_string(category));
 
 	Show::write("\n\n  server sending files for category: " + std::to_string(category));
@@ -395,16 +422,27 @@ void processDownloadRequest(int category, std::string files) {
 
 		int count = 0;
 
-		std::vector<std::string> filesPub;
+		std::set<std::string> filesPubS;
 		if (files == "ALL") {
-			filesPub = FileSystem::Directory::getFiles(getRemoteCodePublishedDir(category), "*.*");
+			std::vector<std::string> filesPub = FileSystem::Directory::getFiles(getRemoteCodePublishedDir(category), "*.*");
+			if (filesPub.size() > 0) {
+				for (std::string f : filesPub) {
+					filesPubS.insert(f);
+				}
+			}
 		}
 		else {
-			filesPub = split(files, ',');
+			std::vector<std::string> filesPub = split(files, ',');
+			for (std::string file : filesPub) {
+				std::vector<std::string> depFiles = dependencyMap[std::to_string(category) + "," + file];
+				for (std::string f : depFiles) {
+					filesPubS.insert(f);
+				}
+			}
 		}
 		Show::write("\n  ");
-		Show::write(std::to_string(filesPub.size()) + " files were asked by client");
-		for (std::string file : filesPub) {
+		Show::write(std::to_string(filesPubS.size()) + " files were asked by client");
+		for (std::string file : filesPubS) {
 			if (sendFile(getRemoteCodePublishedDir(category) + file, si, category)) {
 				count++;
 			}
@@ -439,6 +477,8 @@ int main()
 
 	Async::BlockingQueue<HttpMessage> msgQ;
 
+	std::unordered_map<std::string, std::vector<std::string>> dependencyMap;
+
 	try
 	{
 		SocketSystem ss;
@@ -454,13 +494,13 @@ int main()
 		{
 			HttpMessage msg = msgQ.deQ();
 			if (msg.bodyString()=="PUBLISH") {
-				processPublishRequest(std::stoi(msg.findValue("CATEGORY")));
+				processPublishRequest(std::stoi(msg.findValue("CATEGORY")), dependencyMap);
 			} else if (msg.bodyString() == "DELETE") {
 				processDeleteRequest(std::stoi(msg.findValue("CATEGORY")));
 			} else if (msg.bodyString() == "DISPLAY") {
 				processDisplayRequest(std::stoi(msg.findValue("CATEGORY")));
 			} else if (msg.bodyString() == "DOWNLOAD") {
-				processDownloadRequest(std::stoi(msg.findValue("CATEGORY")), msg.findValue("FILES"));
+				processDownloadRequest(std::stoi(msg.findValue("CATEGORY")), msg.findValue("FILES"), dependencyMap);
 			}
 		}
 	}
