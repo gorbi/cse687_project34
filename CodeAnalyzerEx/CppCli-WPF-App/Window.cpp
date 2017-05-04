@@ -203,7 +203,6 @@ hSendMessageGrid->Children->Add(hRadioCategoryPM1);
 RowDefinition^ hRow2Def22w = gcnew RowDefinition();
 hRow2Def22w->Height = GridLength(15);
 hSendMessageGrid->RowDefinitions->Add(hRow2Def22w);
-
 }
 
 void WPFCppCliDemo::setButtonsProperties()
