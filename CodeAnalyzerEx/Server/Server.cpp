@@ -47,18 +47,7 @@ using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
 using EndPoint = std::string;
 
-std::vector<std::string> split(const std::string &s, char delim) {
-	std::stringstream ss;
-	ss.str(s);
-	std::string item;
-	std::vector<std::string> elems;
-	while (std::getline(ss, item, delim)) {
-		elems.push_back(item);
-	}
-	return elems;
-}
-
-void showDepdencyMap(std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
+/*void showDepdencyMap(std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 	std::cout << "\n   Values in dependency map are";
 	for (auto const& kv : dependencyMap) {
 		std::cout << "\n  key: " << kv.first;
@@ -66,7 +55,7 @@ void showDepdencyMap(std::unordered_map<std::string, std::vector<std::string>>& 
 			std::cout << "\n  value: " << value;
 		}
 	}
-}
+}*/
 
 //----< factory for creating messages >------------------------------
 /*
@@ -241,7 +230,7 @@ void processPublishRequest(int category, std::unordered_map<std::string, std::ve
 		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
 		if (result == 0) {
 			res.addAttribute(HttpMessage::attribute("RESULT", "SUCCESS"));
-			showDepdencyMap(dependencyMap);
+			//showDepdencyMap(dependencyMap);
 		}
 		else
 			res.addAttribute(HttpMessage::attribute("RESULT", "FAILURE"));

@@ -611,8 +611,8 @@ int main(array<System::String^>^ args)
   window->sendMessage(a, b);
 
   window->hListBox->Items->Clear();
-  System::Console::WriteLine("\n Requirement 5, 6 & 7 : Upload files from ..\\\Analyzer\\ directory to category 2 sandbox of remote code publisher");
-  window->directorySearch("..\\\Analyzer\\");
+  System::Console::WriteLine("\n Requirement 5, 6 & 7 : Upload files from ..\\Analyzer\\ directory to category 2 sandbox of remote code publisher");
+  window->directorySearch("..\\Analyzer\\");
   window->hRadioCategoryUFL2->IsChecked = true;
   window->uploadFileList(a, b);
 

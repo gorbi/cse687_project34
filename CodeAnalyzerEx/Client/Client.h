@@ -2,9 +2,9 @@
 /////////////////////////////////////////////////////////////////////////
 // Client.h - Demonstrates simple one-way HTTP messaging               //
 //                                                                     //
-// Jim Fawcett, CSE687 - Object Oriented Design, Spring 2016           //
+// Nagaprasad Natarajaurs, CSE687 - Object Oriented Design, Spring 2016//
 // Application: OOD Project #4                                         //
-// Platform:    Visual Studio 2015, Dell XPS 8900, Windows 10 pro      //
+// Platform:    Visual Studio 2015, MBP 2016, Windows 10 pro           //
 /////////////////////////////////////////////////////////////////////////
 /*
 * This package implements a client that sends HTTP style messages and
@@ -43,17 +43,6 @@
 #include <sstream>
 #include <vector>
 #include <iterator>
-
-std::vector<std::string> split(const std::string &s, char delim) {
-	std::stringstream ss;
-	ss.str(s);
-	std::string item;
-	std::vector<std::string> elems;
-	while (std::getline(ss, item, delim)) {
-		elems.push_back(item);
-	}
-	return elems;
-}
 
 using Show = Logging::StaticLogger<1>;
 using namespace Utilities;
@@ -187,6 +176,11 @@ bool MsgClient::sendFile(const std::string& fqname, Socket& socket, int category
 		return false;
 	}
 }
+
+//----< factory for getting response message >------------------------------
+/*
+* this function starts listener at given port and waits a single message
+*/
 HttpMessage MsgClient::startListener(int port)
 {
 	Async::BlockingQueue<HttpMessage> msgQ;
@@ -212,7 +206,10 @@ HttpMessage MsgClient::startListener(int port)
 		return empty;
 	}
 }
-
+//----< factory for getting response message >------------------------------------------------
+/*
+* this function starts specialised listener at given port and waits a download complete message
+*/
 HttpMessage startDownloadListener(int port) {
 	Async::BlockingQueue<HttpMessage> msgQ;
 
@@ -247,7 +244,10 @@ HttpMessage startDownloadListener(int port) {
 		return empty;
 	}
 }
-
+//----< factory for sending download message >------------------------------------------------
+/*
+* this function request server to download given files from given category
+*/
 std::string MsgClient::download(int category, std::string filenames) {
 	try {
 		SocketSystem ss;
@@ -313,7 +313,10 @@ std::string MsgClient::download(int category, std::string filenames) {
 		return std::string("Caught exception");
 	}
 }
-
+//----< factory for sending upload message >------------------------------------------------
+/*
+* this function sends given files tp server for given category
+*/
 std::string MsgClient::upload(int category, std::string filenames) {
 	try {
 		SocketSystem ss;
@@ -353,7 +356,10 @@ std::string MsgClient::upload(int category, std::string filenames) {
 	}
 }
 
-
+//----< factory for sending publish message >------------------------------------------------
+/*
+* this function sends publish request to server for given category
+*/
 std::string MsgClient::publish(int category)
 {
 	try {
@@ -389,6 +395,10 @@ std::string MsgClient::publish(int category)
 	}
 }
 
+//----< factory for sending remove message >------------------------------------------------
+/*
+* this function sends remove request to server for given category
+*/
 std::string MsgClient::remove(int category)
 {
 	try {
@@ -424,6 +434,10 @@ std::string MsgClient::remove(int category)
 	}
 }
 
+//----< factory for sending display message >------------------------------------------------
+/*
+* this function sends display request to server for given category
+*/
 std::string MsgClient::display(int category)
 {
 	try {
