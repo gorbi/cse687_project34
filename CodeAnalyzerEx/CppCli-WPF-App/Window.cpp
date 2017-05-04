@@ -578,6 +578,18 @@ int main(array<System::String^>^ args)
   Console::WriteLine(L"\n Starting WPFCppCliDemo");
 
   Application^ app = gcnew Application();
-  app->Run(gcnew WPFCppCliDemo());
+  WPFCppCliDemo^ window = gcnew WPFCppCliDemo();
+
+  System::Object^ a;
+  System::Windows::RoutedEventArgs^ b;
+
+  System::Console::WriteLine("\n Requirement 9 : Automated Unit Test");
+
+  System::Console::WriteLine("\n Requirement 5 : Upload files from ..\\XmlDocument\\ directory to category 1 sandbox of remote code publisher");
+  window->directorySearch("..\\XmlDocument\\");
+  window->hRadioCategoryUFL1->IsChecked = true;
+  window->uploadFileList(a, b);
+
+  app->Run(window);
   Console::WriteLine(L"\n\n");
 }

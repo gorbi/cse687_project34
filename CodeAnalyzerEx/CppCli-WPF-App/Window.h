@@ -122,13 +122,11 @@ namespace CppCliWindows
     // Controls for FileListView View
     Grid^ hFileListGrid = gcnew Grid();
     Forms::FolderBrowserDialog^ hFolderBrowserDialog = gcnew Forms::FolderBrowserDialog();
-    ListBox^ hListBox = gcnew ListBox();
     Button^ hFolderBrowseButton = gcnew Button();
 	Button^ hUploadButton = gcnew Button();
 	Button^ hDisplayButton = gcnew Button();
 	Button^ hDownloadButton = gcnew Button();
 	Button^ hDeleteButton = gcnew Button();
-	RadioButton^ hRadioCategoryUFL1 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryUFL2 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryUFL3 = gcnew RadioButton();
 
@@ -162,12 +160,14 @@ namespace CppCliWindows
 	void deleteCategory(Object^ sender, RoutedEventArgs^ args);
     void OnLoaded(Object^ sender, RoutedEventArgs^ args);
     void Unloading(Object^ sender, System::ComponentModel::CancelEventArgs^ args);
+	ListBox^ hListBox = gcnew ListBox();
+	void directorySearch(String^);
+	RadioButton^ hRadioCategoryUFL1 = gcnew RadioButton();
   private:
     std::string toStdString(String^ pStr);
     String^ toSystemString(std::string& str);
     void setTextBlockProperties();
     void setButtonsProperties();
-	void directorySearch(String^);
 	int getCategoryUFL();
 	int getCategoryDFL();
 	int getCategoryPM();
