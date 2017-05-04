@@ -145,6 +145,8 @@ namespace CppCliWindows
 
     void setUpStatusBar();
     void setUpTabControl();
+	void setUpTabControl1();
+	void setButtonsProperties1();
     void setUpSendMessageView();
     void setUpFileListView();
     void setUpConnectionView();

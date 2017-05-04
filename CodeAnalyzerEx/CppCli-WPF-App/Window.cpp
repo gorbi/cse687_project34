@@ -101,27 +101,29 @@ void WPFCppCliDemo::setUpStatusBar()
 	grid->Children->Add(hDownloadButton);
 }
 
+void WPFCppCliDemo::setUpTabControl1() {
+	hGrid->Children->Add(hTabControl);
+	hSendMessageTab->Header = "Publish / Delete / Messages from server";
+	hUploadFLTab->Header = "Upload File List";
+	hDisplayFLTab->Header = "Display File List";
+	hTabControl->Items->Add(hUploadFLTab);
+	hTabControl->Items->Add(hDisplayFLTab);
+	hTabControl->Items->Add(hSendMessageTab);
+	hStatusBar->Items->Add(hStatusBarItem);
+	hStatus->Text = "very important messages will appear here";
+	hStatusBarItem->Content = hStatus;
+	hStatusBar->Padding = Thickness(10, 2, 10, 2);
+	Console::Write("\n  setting up sendMessage view");
+	hSendMessageGrid->Margin = Thickness(20);
+	hSendMessageTab->Content = hSendMessageGrid;
+	setTextBlockProperties();
+	setButtonsProperties();
+	grid->Margin = Thickness(20);
+	hDisplayFLTab->Content = grid;
+}
 void WPFCppCliDemo::setUpTabControl()
 {
-  hGrid->Children->Add(hTabControl);
-  hSendMessageTab->Header = "Publish / Delete / Messages from server";
-  hUploadFLTab->Header = "Upload File List";
-  hDisplayFLTab->Header = "Display File List";
-  hTabControl->Items->Add(hUploadFLTab);
-  hTabControl->Items->Add(hDisplayFLTab);
-  hTabControl->Items->Add(hSendMessageTab);
-  hStatusBar->Items->Add(hStatusBarItem);
-  hStatus->Text = "very important messages will appear here";
-  //status->FontWeight = FontWeights::Bold;
-  hStatusBarItem->Content = hStatus;
-  hStatusBar->Padding = Thickness(10, 2, 10, 2);
-  Console::Write("\n  setting up sendMessage view");
-  hSendMessageGrid->Margin = Thickness(20);
-  hSendMessageTab->Content = hSendMessageGrid;
-  setTextBlockProperties();
-  setButtonsProperties();
-  grid->Margin = Thickness(20);
-  hDisplayFLTab->Content = grid;
+	setUpTabControl1();
   RowDefinition^ hRow1Defq = gcnew RowDefinition();
   grid->RowDefinitions->Add(hRow1Defq);
   Grid^ hGridq = gcnew Grid();
@@ -176,32 +178,37 @@ void WPFCppCliDemo::setTextBlockProperties()
   hSendMessageGrid->Children->Add(hScrollViewer1);
 }
 
+void WPFCppCliDemo::setButtonsProperties1() {
+RowDefinition^ hRow2Def22f = gcnew RowDefinition();
+hRow2Def22f->Height = GridLength(40);
+hSendMessageGrid->RowDefinitions->Add(hRow2Def22f);
+hClearButton->Content = "Clear";
+hClearButton->Height = 30;
+hClearButton->Width = 120;
+hClearButton->BorderThickness = Thickness(2);
+hClearButton->BorderBrush = Brushes::Black;
+hSendMessageGrid->SetRow(hClearButton, 1);
+hSendMessageGrid->Children->Add(hClearButton);
+RowDefinition^ hRow2Def22 = gcnew RowDefinition();
+hRow2Def22->Height = GridLength(15);
+hSendMessageGrid->RowDefinitions->Add(hRow2Def22);
+hRadioCategoryPM1->GroupName = "Categories PM";
+hRadioCategoryPM1->Content = "Category 1";
+hRadioCategoryPM1->Height = 30;
+hRadioCategoryPM1->Width = 120;
+hRadioCategoryPM1->BorderThickness = Thickness(2);
+hRadioCategoryPM1->BorderBrush = Brushes::Black;
+hSendMessageGrid->SetRow(hRadioCategoryPM1, 2);
+hSendMessageGrid->Children->Add(hRadioCategoryPM1);
+RowDefinition^ hRow2Def22w = gcnew RowDefinition();
+hRow2Def22w->Height = GridLength(15);
+hSendMessageGrid->RowDefinitions->Add(hRow2Def22w);
+
+}
+
 void WPFCppCliDemo::setButtonsProperties()
 {
-	RowDefinition^ hRow2Def22f = gcnew RowDefinition();
-	hRow2Def22f->Height = GridLength(40);
-	hSendMessageGrid->RowDefinitions->Add(hRow2Def22f);
-	hClearButton->Content = "Clear";
-	hClearButton->Height = 30;
-	hClearButton->Width = 120;
-	hClearButton->BorderThickness = Thickness(2);
-	hClearButton->BorderBrush = Brushes::Black;
-	hSendMessageGrid->SetRow(hClearButton, 1);
-	hSendMessageGrid->Children->Add(hClearButton);
-  RowDefinition^ hRow2Def22 = gcnew RowDefinition();
-  hRow2Def22->Height = GridLength(15);
-  hSendMessageGrid->RowDefinitions->Add(hRow2Def22);
-  hRadioCategoryPM1->GroupName = "Categories PM";
-  hRadioCategoryPM1->Content = "Category 1";
-  hRadioCategoryPM1->Height = 30;
-  hRadioCategoryPM1->Width = 120;
-  hRadioCategoryPM1->BorderThickness = Thickness(2);
-  hRadioCategoryPM1->BorderBrush = Brushes::Black;
-  hSendMessageGrid->SetRow(hRadioCategoryPM1, 2);
-  hSendMessageGrid->Children->Add(hRadioCategoryPM1);
-  RowDefinition^ hRow2Def22w = gcnew RowDefinition();
-  hRow2Def22w->Height = GridLength(15);
-  hSendMessageGrid->RowDefinitions->Add(hRow2Def22w);
+	setButtonsProperties1();
   hRadioCategoryPM2->GroupName = "Categories PM";
   hRadioCategoryPM2->Content = "Category 2";
   hRadioCategoryPM2->Height = 30;

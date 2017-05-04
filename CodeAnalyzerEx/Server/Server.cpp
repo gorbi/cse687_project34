@@ -163,69 +163,38 @@ bool sendFile(const std::string& fqname, Socket& socket, int category)
 }
 
 int publishCode(int category, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
-
 	char * argv[7];
 	std::string x[] = { "CodeAnalyzer.exe",getRemoteCodeDir(category),"*.h","*.cpp","/m","/f","/r" };
 	for (int i = 0; i < 7; i++) {
-		const char* xx = x[i].c_str();
-		argv[i] = _strdup(xx);
+		const char* xx = x[i].c_str();argv[i] = _strdup(xx);
 	}
-
 	using namespace CodeAnalysis;
-
 	CodeAnalysisExecutive exec;
-
 	try {
 		std::cout << "\n-----------------Requirement 10: Automated unit test suite-------------------\n\n";
 		bool succeeded = exec.ProcessCommandLine(7, argv);
 		if (!succeeded)
-		{
 			return 1;
-		}
-		exec.setDisplayModes();
-		exec.startLogger(std::cout);
-
+		exec.setDisplayModes();exec.startLogger(std::cout);
 		std::ostringstream tOut("CodeAnalysis - Version 1.4");
 		Utils::sTitle(tOut.str(), 3, 92, tOut, '=');
-		Rslt::write(tOut.str());
-
-		//Rslt::write("\n     " + exec.getAnalysisPath());
-		Rslt::write("\n     " + exec.systemTime());
-		Rslt::flush();
-		exec.showCommandLineArguments(7, argv);
-		Rslt::write("\n");
-
-		exec.getSourceFiles();
-		exec.processSourceCode(true);
-		exec.complexityAnalysis();
-		exec.dispatchOptionalDisplays();
-		exec.flushLogger();
-		exec.displayMetricSummary(50, 10);
-
-		exec.flushLogger();
-		Rslt::write("\n");
-		std::ostringstream out;
+		Rslt::write(tOut.str());Rslt::write("\n     " + exec.systemTime());Rslt::flush();
+		exec.showCommandLineArguments(7, argv);Rslt::write("\n");
+		exec.getSourceFiles();exec.processSourceCode(true);exec.complexityAnalysis();exec.dispatchOptionalDisplays();
+		exec.flushLogger();exec.displayMetricSummary(50, 10);exec.flushLogger();
+		Rslt::write("\n");std::ostringstream out;
 		out << "\n  " << std::setw(10) << "searched" << std::setw(6) << exec.numDirs() << " dirs";
 		out << "\n  " << std::setw(10) << "processed" << std::setw(6) << exec.numFiles() << " files";
-		Rslt::write(out.str());
-		Rslt::write("\n");
-		exec.stopLogger();
-		std::cout << "\n  Code Analysis completed";
-
+		Rslt::write(out.str());Rslt::write("\n");exec.stopLogger();std::cout << "\n  Code Analysis completed";
 		Files allsubfiles = exec.getAllsubFiles();
-
 		//Type Analysis
-		TypeAnal ta;
-		ta.doTypeAnal();
+		TypeAnal ta;ta.doTypeAnal();
 		//Get Line Number Details
 		std::unordered_map<std::string, std::vector<std::unordered_map<std::string, std::string>>>& lineMapInst = ta.getLineNumMap();
-
-
 		//Dependency Analysis
 		DepAnal da(exec.getDepXMLPath(), 5);
 		for (File file : allsubfiles)
 			da.doDepAnal(ta, file);
-
 		NoSqlDb<std::string> db = da.getDb();
 		std::vector<std::string> files = db.keys();
 		for (std::string file : files) {
@@ -233,27 +202,22 @@ int publishCode(int category, std::unordered_map<std::string, std::vector<std::s
 			std::vector<std::string> fqnames = elem.children;
 			if (fqnames.size() > 0) {
 				std::vector<std::string> filenames;
-				for (std::string fqname : fqnames) {
+				for (std::string fqname : fqnames)
 					filenames.push_back(FileSystem::Path::getName(fqname)+".htm");
-				}
 				dependencyMap[std::to_string(category) + "," + FileSystem::Path::getName(file)+".htm"] = filenames;
 			}
 		}
-
 		//Invoke code publisher
 		CodePublisher cPub(da);
 		cPub.htmlFilePath = getRemoteCodePublishedDir(category);
 		cPub.fileList(allsubfiles, lineMapInst);
-
 		std::cout << "\n\n-------------------------------------------------------------------------------------\n\n";
-
 	}
 	catch (std::exception& except)
 	{
 		exec.flushLogger();
 		std::cout << "\n\n  caught exception in Executive::main: " + std::string(except.what()) + "\n\n";
-		exec.stopLogger();
-		return 1;
+		exec.stopLogger();return 1;
 	}
 	return 0;
 }
@@ -353,7 +317,6 @@ void processDeleteRequest(int category) {
 
 void processDisplayRequest(int category) {
 	Show::write("\n\n  server recvd display request for category: " + std::to_string(category));
-
 	int result = 0;
 	std::vector<std::string> filesPub;
 	std::string files("");
@@ -374,9 +337,7 @@ void processDisplayRequest(int category) {
 		std::cout << "\n\n  caught exception: " + std::string(except.what()) + "\n\n";
 		result = 1;
 	}
-
 	try {
-
 		SocketSystem ss;
 		SocketConnecter si;
 		while (!si.connect("localhost", 8081))
@@ -384,8 +345,6 @@ void processDisplayRequest(int category) {
 			Show::write("\n client waiting to connect");
 			::Sleep(100);
 		}
-
-		// send a set of messages
 		HttpMessage res = makeMessage(1, "DISPLAY", "toAddr:localhost:8081");
 		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
 		if (result == 0) {
@@ -398,7 +357,7 @@ void processDisplayRequest(int category) {
 	}
 	catch (std::exception& exc)
 	{
-		Show::write("\n  Exeception caught: ");
+		Show::write("\n  Exception caught: ");
 		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
 		Show::write(exMsg);
 	}
@@ -406,12 +365,9 @@ void processDisplayRequest(int category) {
 
 void processDownloadRequest(int category, std::string files, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 	Show::write("\n\n  server recvd download request for category: " + std::to_string(category));
-
 	Show::write("\n\n  server sending files for category: " + std::to_string(category));
 	Show::write("\n\n  files: " + files);
-
 	try {
-
 		SocketSystem ss;
 		SocketConnecter si;
 		while (!si.connect("localhost", 8081))
@@ -419,38 +375,28 @@ void processDownloadRequest(int category, std::string files, std::unordered_map<
 			Show::write("\n client waiting to connect");
 			::Sleep(100);
 		}
-
 		int count = 0;
-
 		std::set<std::string> filesPubS;
 		if (files == "ALL") {
 			std::vector<std::string> filesPub = FileSystem::Directory::getFiles(getRemoteCodePublishedDir(category), "*.*");
-			if (filesPub.size() > 0) {
-				for (std::string f : filesPub) {
+			if (filesPub.size() > 0)
+				for (std::string f : filesPub)
 					filesPubS.insert(f);
-				}
-			}
 		}
 		else {
 			std::vector<std::string> filesPub = split(files, ',');
 			for (std::string file : filesPub) {
 				std::vector<std::string> depFiles = dependencyMap[std::to_string(category) + "," + file];
-				for (std::string f : depFiles) {
+				for (std::string f : depFiles)
 					filesPubS.insert(f);
-				}
 			}
 		}
-		Show::write("\n  ");
-		Show::write(std::to_string(filesPubS.size()) + " files were asked by client");
-		for (std::string file : filesPubS) {
-			if (sendFile(getRemoteCodePublishedDir(category) + file, si, category)) {
+		Show::write("\n  ");Show::write(std::to_string(filesPubS.size()) + " files were asked by client");
+		for (std::string file : filesPubS)
+			if (sendFile(getRemoteCodePublishedDir(category) + file, si, category))
 				count++;
-			}
-		}
-		Show::write("\n  ");
-		Show::write(std::to_string(count) + " files were sent by server");
+		Show::write("\n  ");Show::write(std::to_string(count) + " files were sent by server");
 		Show::write("\n  files were sent for category: " + std::to_string(category));
-
 		// send a set of messages
 		HttpMessage res = makeMessage(1, "DOWNLOAD", "toAddr:localhost:8081");
 		res.addAttribute(HttpMessage::attribute("CATEGORY", std::to_string(category)));
