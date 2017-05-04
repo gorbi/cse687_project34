@@ -64,7 +64,7 @@ private:
 	void printIdx(std::string, std::ofstream&);
 	void printIdxInitial(std::ofstream&);
 
-	std::string htmlHeader = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\css\\main.css\">\n<script src=\"..\\js\\main.js\">\n</script>\n</head>\n";
+	std::string htmlHeader = "<html>\n<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"main.css\">\n<script src=\"main.js\">\n</script>\n</head>\n";
 	std::vector<std::string> generateUniqueButtonAndDiv();
 	int uniqueId = 0;
 	CodeAnalysis::DepAnal& dpAnal;
@@ -80,11 +80,11 @@ CodePublisher::CodePublisher(CodeAnalysis::DepAnal& dp) :dpAnal(dp) {
 	std::cout << "HTML files are present in path ..\\RemoteCodePublished\\CategoryX\n";
 	std::cout << "************************************************************\n";
 	std::cout << "**********************************************************************************************************\n";
-	std::cout << "Requirement 5 : CSS file for styling is present in path: ..\\css\\main.css\n";
+	std::cout << "Requirement 5 : CSS file for styling is present in path: main.css\n";
 	std::cout << "**********************************************************************************************************\n";
-	std::cout << "Requirements 4 & 5 : JavaScript file for hiding and unhiding is present in path: ..\\js\\main.js\n";
+	std::cout << "Requirements 4 & 5 : JavaScript file for hiding and unhiding is present in path: main.js\n";
 	std::cout << "**********************************************************************************************************\n";
-	std::cout << "Requirement 6 : Linking to CSS and JS files:<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"..\\css\\main.css\">\n<script src=\"..\\js\\main.js\">\n</script>\n</head>\n";
+	std::cout << "Requirement 6 : Linking to CSS and JS files:<head>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"main.css\">\n<script src=\"main.js\">\n</script>\n</head>\n";
 	std::cout << "**********************************************************************************************************\n";
 	std::cout << "\n\n";
 }
@@ -92,6 +92,29 @@ CodePublisher::CodePublisher(CodeAnalysis::DepAnal& dp) :dpAnal(dp) {
 //Collects all files for HTML generation
 void CodePublisher::fileList(std::vector<std::string> listOfFiles, std::unordered_map<std::string, std::vector<std::unordered_map<std::string, std::string>>>& lMap)
 {
+	try {
+		std::ifstream  src("..\\RemoteCodePublished\\css\\main.css", std::ios::binary);
+		std::ofstream  dst(htmlFilePath + "main.css", std::ios::binary);
+		dst << src.rdbuf();
+	}
+	catch (std::exception& exc)
+	{
+		std::cout << "\n  Exception caught: ";
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		std::cout << exMsg;
+	}
+
+	try {
+		std::ifstream  src("..\\RemoteCodePublished\\js\\main.js", std::ios::binary);
+		std::ofstream  dst(htmlFilePath + "main.js", std::ios::binary);
+		dst << src.rdbuf();
+	}
+	catch (std::exception& exc)
+	{
+		std::cout << "\n  Exception caught: ";
+		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
+		std::cout << exMsg;
+	}
 	std::ofstream strBuff;
 	strBuff.open(htmlFilePath + "index.htm");
 	std::cout << "*************************************************************************************************\n";

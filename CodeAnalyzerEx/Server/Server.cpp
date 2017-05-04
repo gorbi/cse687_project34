@@ -390,6 +390,8 @@ void processDownloadRequest(int category, std::string files, std::unordered_map<
 				for (std::string f : depFiles)
 					filesPubS.insert(f);
 			}
+			filesPubS.insert("main.js");
+			filesPubS.insert("main.css");
 		}
 		Show::write("\n  ");Show::write(std::to_string(filesPubS.size()) + " files were asked by client");
 		for (std::string file : filesPubS)
