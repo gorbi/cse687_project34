@@ -96,9 +96,6 @@ namespace CppCliWindows
     StatusBarItem^ hStatusBarItem = gcnew StatusBarItem();
     TextBlock^ hStatus = gcnew TextBlock(); Grid^ grid = gcnew Grid();
 
-	RadioButton^ hRadioCategoryDFL2 = gcnew RadioButton();
-	RadioButton^ hRadioCategoryDFL3 = gcnew RadioButton();
-
     // Controls for SendMessage View
 
     Grid^ hSendMessageGrid = gcnew Grid();
@@ -106,8 +103,6 @@ namespace CppCliWindows
     Button^ hClearButton = gcnew Button();
     TextBlock^ hTextBlock1 = gcnew TextBlock();
     ScrollViewer^ hScrollViewer1 = gcnew ScrollViewer();
-	RadioButton^ hRadioCategoryPM2 = gcnew RadioButton();
-	RadioButton^ hRadioCategoryPM3 = gcnew RadioButton();
 
     String^ msgText 
       = "Command:ShowMessage\n"   // command
@@ -125,11 +120,8 @@ namespace CppCliWindows
 	Button^ hDisplayButton = gcnew Button();
 	Button^ hDownloadButton = gcnew Button();
 	Button^ hDeleteButton = gcnew Button();
-	RadioButton^ hRadioCategoryUFL2 = gcnew RadioButton();
-	RadioButton^ hRadioCategoryUFL3 = gcnew RadioButton();
 
 
-	ListBox^ hDListBox = gcnew ListBox();
 
     // receive thread
 
@@ -154,14 +146,22 @@ namespace CppCliWindows
     void browseForFolder(Object^ sender, RoutedEventArgs^ args);
 	void displayFilesForCategory(Object^ sender, RoutedEventArgs^ args);
 	void downloadFilesForCategory(Object^ sender, RoutedEventArgs^ args);
+	void downloadFilesForCategory(Object^ sender, RoutedEventArgs^ args, String^ file);
 	void deleteCategory(Object^ sender, RoutedEventArgs^ args);
     void OnLoaded(Object^ sender, RoutedEventArgs^ args);
     void Unloading(Object^ sender, System::ComponentModel::CancelEventArgs^ args);
+	ListBox^ hDListBox = gcnew ListBox();
 	ListBox^ hListBox = gcnew ListBox();
 	void directorySearch(String^);
 	RadioButton^ hRadioCategoryUFL1 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryPM1 = gcnew RadioButton();
 	RadioButton^ hRadioCategoryDFL1 = gcnew RadioButton();
+	RadioButton^ hRadioCategoryUFL2 = gcnew RadioButton();
+	RadioButton^ hRadioCategoryUFL3 = gcnew RadioButton();
+	RadioButton^ hRadioCategoryDFL2 = gcnew RadioButton();
+	RadioButton^ hRadioCategoryDFL3 = gcnew RadioButton();
+	RadioButton^ hRadioCategoryPM2 = gcnew RadioButton();
+	RadioButton^ hRadioCategoryPM3 = gcnew RadioButton();
   private:
     std::string toStdString(String^ pStr);
     String^ toSystemString(std::string& str);

@@ -130,7 +130,7 @@ void WPFCppCliDemo::setUpTabControl()
   hGridq->SetColumn(grid, 0);
   hGridq->SetRow(grid, 0);
   hGridq->SetColumnSpan(grid, 2);
-  hDListBox->SelectionMode = SelectionMode::Multiple;
+  hDListBox->SelectionMode = SelectionMode::Extended;
   hGridq->Children->Add(hDListBox);
   grid->Children->Add(hGridq);
   Border^ borderq = gcnew Border();
@@ -510,6 +510,22 @@ void CppCliWindows::WPFCppCliDemo::downloadFilesForCategory(Object ^ sender, Rou
 	hStatus->Text = "DOWNLOAD FROM " + category;
 
 }
+
+void CppCliWindows::WPFCppCliDemo::downloadFilesForCategory(Object ^ sender, RoutedEventArgs ^ args, String^ file)
+{
+	int category = getCategoryDFL();
+
+	if (category == -1)
+		return;
+
+	pSendr_->postMessage(toStdString("DOWNLOAD," + category + "," + file+",END"));
+
+
+	Console::Write("DOWNLOAD FROM " + category + "\n");
+	hStatus->Text = "DOWNLOAD FROM " + category;
+
+}
+
 void CppCliWindows::WPFCppCliDemo::deleteCategory(Object ^ sender, RoutedEventArgs ^ args)
 {
 	int category = getCategoryPM();
@@ -585,24 +601,47 @@ int main(array<System::String^>^ args)
 
   System::Console::WriteLine("\n Requirement 9 : Automated Unit Test");
 
-  System::Console::WriteLine("\n Requirement 7 : Except UPLOAD functionality, everything use HTTP style messages via synchronous request/response messaging");
-
-  System::Console::WriteLine("\n Requirement 5, 6 & 7 : Upload files from ..\\XmlDocument\\ directory to category 1 sandbox of remote code publisher");
+  System::Console::WriteLine("\n Requirement 5, 6, 7 & 8 : Upload files from ..\\XmlDocument\\ directory to category 1 sandbox of remote code publisher");
   window->directorySearch("..\\XmlDocument\\");
   window->hRadioCategoryUFL1->IsChecked = true;
   window->uploadFileList(a, b);
+  System::Console::WriteLine("\n Requirement 7 : Only UPLOAD functionality use HTTP style messages via asynchronous one-way messaging");
 
   System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Run code publisher in category 1 sandbox of remote code publisher");
   window->hRadioCategoryPM1->IsChecked = true;
   window->sendMessage(a, b);
 
+  System::Console::WriteLine("\n Requirement 5, 6 & 7 : Upload files from ..\\\Analyzer\\ directory to category 2 sandbox of remote code publisher");
+  window->directorySearch("..\\\Analyzer\\");
+  window->hRadioCategoryUFL2->IsChecked = true;
+  window->uploadFileList(a, b);
+
+  System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Run code publisher in category 2 sandbox of remote code publisher");
+  window->hRadioCategoryPM2->IsChecked = true;
+  window->sendMessage(a, b);
+
+  System::Console::WriteLine("\n Requirement 5, 6 & 7 : Display the files which are published in the category 2 sandbox of remote code publisher");
+  window->hRadioCategoryDFL2->IsChecked = true;
+  window->displayFilesForCategory(a, b);
+
+  System::Console::WriteLine("\n Requirement 8 : Download all files which are published in category 2 of sandbox of remote code publisher");
+  window->hRadioCategoryDFL2->IsChecked = true;
+  window->downloadFilesForCategory(a,b);
+  System::Console::WriteLine("\n Downloaded files are in \\ClientDownloads\\Category2\\");
+
+  System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Delete all files in the category 3 sandbox of remote code publisher");
+  window->hRadioCategoryPM3->IsChecked = true;
+  window->deleteCategory(a, b);
+
   System::Console::WriteLine("\n Requirement 5, 6 & 7 : Display the files which are published in the category 1 sandbox of remote code publisher");
   window->hRadioCategoryDFL1->IsChecked = true;
   window->displayFilesForCategory(a, b);
+  
+  System::Console::WriteLine("\n Requirement 10 : Lazy download the file: XmlElement.h.htm & its dependencies which are published in the category 1 sandbox of remote code publisher");
+  window->hRadioCategoryDFL1->IsChecked = true;
+  window->downloadFilesForCategory(a,b,"XmlElement.h.htm");
 
-  System::Console::WriteLine("\n Requirement 7 : Only UPLOAD functionality use HTTP style messages via asynchronous one-way messaging");
-
-
+  System::Console::WriteLine("\n Requirement 7 : Except UPLOAD functionality, everything use HTTP style messages via synchronous request/response messaging");
   app->Run(window);
   Console::WriteLine(L"\n\n");
 }
