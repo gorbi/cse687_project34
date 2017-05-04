@@ -146,7 +146,7 @@ namespace CppCliWindows
     void browseForFolder(Object^ sender, RoutedEventArgs^ args);
 	void displayFilesForCategory(Object^ sender, RoutedEventArgs^ args);
 	void downloadFilesForCategory(Object^ sender, RoutedEventArgs^ args);
-	void downloadFilesForCategory(Object^ sender, RoutedEventArgs^ args, String^ file);
+	void downloadFilesForCategory(int category, String^ file);
 	void deleteCategory(Object^ sender, RoutedEventArgs^ args);
     void OnLoaded(Object^ sender, RoutedEventArgs^ args);
     void Unloading(Object^ sender, System::ComponentModel::CancelEventArgs^ args);

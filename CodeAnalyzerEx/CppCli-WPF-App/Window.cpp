@@ -511,19 +511,11 @@ void CppCliWindows::WPFCppCliDemo::downloadFilesForCategory(Object ^ sender, Rou
 
 }
 
-void CppCliWindows::WPFCppCliDemo::downloadFilesForCategory(Object ^ sender, RoutedEventArgs ^ args, String^ file)
+void CppCliWindows::WPFCppCliDemo::downloadFilesForCategory(int category, String^ file)
 {
-	int category = getCategoryDFL();
-
-	if (category == -1)
-		return;
-
 	pSendr_->postMessage(toStdString("DOWNLOAD," + category + "," + file+",END"));
-
-
 	Console::Write("DOWNLOAD FROM " + category + "\n");
 	hStatus->Text = "DOWNLOAD FROM " + category;
-
 }
 
 void CppCliWindows::WPFCppCliDemo::deleteCategory(Object ^ sender, RoutedEventArgs ^ args)
@@ -611,6 +603,7 @@ int main(array<System::String^>^ args)
   window->hRadioCategoryPM1->IsChecked = true;
   window->sendMessage(a, b);
 
+  window->hListBox->Items->Clear();
   System::Console::WriteLine("\n Requirement 5, 6 & 7 : Upload files from ..\\\Analyzer\\ directory to category 2 sandbox of remote code publisher");
   window->directorySearch("..\\\Analyzer\\");
   window->hRadioCategoryUFL2->IsChecked = true;
@@ -638,8 +631,20 @@ int main(array<System::String^>^ args)
   window->displayFilesForCategory(a, b);
   
   System::Console::WriteLine("\n Requirement 10 : Lazy download the file: XmlElement.h.htm & its dependencies which are published in the category 1 sandbox of remote code publisher");
-  window->hRadioCategoryDFL1->IsChecked = true;
-  window->downloadFilesForCategory(a,b,"XmlElement.h.htm");
+  window->downloadFilesForCategory(1,"XmlElement.h.htm");
+
+  window->hListBox->Items->Clear();
+  System::Console::WriteLine("\n Requirement 5, 6 & 7 : Upload files from ..\\TestFiles\\ directory to category 3 sandbox of remote code publisher(downloading no parent linkage)");
+  window->directorySearch("..\\TestFiles\\");
+  window->hRadioCategoryUFL3->IsChecked = true;
+  window->uploadFileList(a, b);
+
+  System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Run code publisher in category 3 sandbox of remote code publisher");
+  window->hRadioCategoryPM3->IsChecked = true;
+  window->sendMessage(a, b);
+
+  System::Console::WriteLine("\n Requirement 3, 4, 6 & 7 : Lazy download the file: Test3.cpp.htm which has no parents or dependencies");
+  window->downloadFilesForCategory(3, "Test3.cpp.htm");
 
   System::Console::WriteLine("\n Requirement 7 : Except UPLOAD functionality, everything use HTTP style messages via synchronous request/response messaging");
   app->Run(window);
