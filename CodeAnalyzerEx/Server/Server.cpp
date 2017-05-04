@@ -31,23 +31,10 @@
 *     sndr.PostMessage(msg);
 *   HttpMessage msg has the sending adddress, e.g., localhost:8080.
 */
-#include "../HttpMessage/HttpMessage.h"
-#include "Sockets.h"
-#include "FileSystem.h"
-#include "../Logger/Logger.h"
-#include "../Utilities/Utilities.h"
-#include <string>
-#include <iostream>
-#include <thread>
-#include <set>
-#include "ClientHandler.h"
-#include "../Analyzer/Executive.h"
+#include "Server.h"
 
-using Show = Logging::StaticLogger<1>;
-using namespace Utilities;
-using EndPoint = std::string;
-
-/*void showDepdencyMap(std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
+//Displays the dependency map of the server, updated whenever publish is performed
+void Server::showDepdencyMap(std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 	std::cout << "\n   Values in dependency map are";
 	for (auto const& kv : dependencyMap) {
 		std::cout << "\n  key: " << kv.first;
@@ -55,7 +42,7 @@ using EndPoint = std::string;
 			std::cout << "\n  value: " << value;
 		}
 	}
-}*/
+}
 
 //----< factory for creating messages >------------------------------
 /*
@@ -65,7 +52,7 @@ using EndPoint = std::string;
 * - EndPoints are strings of the form ip:port, e.g., localhost:8081. This argument
 *   expects the receiver EndPoint for the toAddr attribute.
 */
-HttpMessage makeMessage(size_t n, const std::string& body, const EndPoint& ep)
+HttpMessage Server::makeMessage(size_t n, const std::string& body, const EndPoint& ep)
 {
 	HttpMessage msg;
 	HttpMessage::Attribute attrib;
@@ -95,7 +82,7 @@ HttpMessage makeMessage(size_t n, const std::string& body, const EndPoint& ep)
 }
 //----< send message using socket >----------------------------------
 
-void sendMessage(HttpMessage& msg, Socket& socket)
+void Server::sendMessage(HttpMessage& msg, Socket& socket)
 {
 	std::string msgString = msg.toString();
 	socket.send(msgString.size(), (Socket::byte*)msgString.c_str());
@@ -107,7 +94,7 @@ void sendMessage(HttpMessage& msg, Socket& socket)
 *   has been sent.
 * - Sends in binary mode which works for either text or binary.
 */
-bool sendFile(const std::string& fqname, Socket& socket, int category)
+bool Server::sendFile(const std::string& fqname, Socket& socket, int category)
 {
 	// assumes that socket is connected
 	try {
@@ -151,7 +138,8 @@ bool sendFile(const std::string& fqname, Socket& socket, int category)
 	}
 }
 
-int publishCode(int category, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
+// Publishes the code
+int Server::publishCode(int category, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 	char * argv[7];
 	std::string x[] = { "CodeAnalyzer.exe",getRemoteCodeDir(category),"*.h","*.cpp","/m","/f","/r" };
 	for (int i = 0; i < 7; i++) {
@@ -211,7 +199,8 @@ int publishCode(int category, std::unordered_map<std::string, std::vector<std::s
 	return 0;
 }
 
-void processPublishRequest(int category, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
+// process the publish request when received the client
+void Server::processPublishRequest(int category, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 	Show::write("\n\n  server recvd publish request for category: " + std::to_string(category));
 
 	int result = publishCode(category, dependencyMap);
@@ -244,7 +233,8 @@ void processPublishRequest(int category, std::unordered_map<std::string, std::ve
 	}
 }
 
-void cleanup(int category) {
+// performs the cleanup of the remote code directories
+void Server::cleanup(int category) {
 	std::vector<std::string> filesPub = FileSystem::Directory::getFiles(getRemoteCodePublishedDir(category), "*.*");
 	std::cout << "\n  Number of published files found for category " << category << ": " << filesPub.size();
 	for (std::string file : filesPub) {
@@ -261,7 +251,8 @@ void cleanup(int category) {
 	}
 }
 
-int deleteCode(int category) {
+// wrapper for cleanup function so that it doesnt throw excception
+int Server::deleteCode(int category) {
 	try {
 		cleanup(category);
 		return 0;
@@ -273,7 +264,8 @@ int deleteCode(int category) {
 	}
 }
 
-void processDeleteRequest(int category) {
+// process the delete request when received the client
+void Server::processDeleteRequest(int category) {
 	Show::write("\n\n  server recvd delete request for category: " + std::to_string(category));
 
 	int result = deleteCode(category);
@@ -304,7 +296,8 @@ void processDeleteRequest(int category) {
 	}
 }
 
-void processDisplayRequest(int category) {
+// process the display request when received the client
+void Server::processDisplayRequest(int category) {
 	Show::write("\n\n  server recvd display request for category: " + std::to_string(category));
 	int result = 0;
 	std::vector<std::string> filesPub;
@@ -351,8 +344,8 @@ void processDisplayRequest(int category) {
 		Show::write(exMsg);
 	}
 }
-
-void processDownloadRequest(int category, std::string files, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
+// process the download request when received the client
+void Server::processDownloadRequest(int category, std::string files, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap) {
 	Show::write("\n\n  server recvd download request for category: " + std::to_string(category));
 	Show::write("\n\n  server sending files for category: " + std::to_string(category));
 	Show::write("\n\n  files: " + files);
@@ -411,15 +404,20 @@ int main()
 	Show::attach(&std::cout);
 	Show::start();
 	Show::title("\n  HttpMessage Server started");
+	Server s;
+	s.start(8080);
+	//s.stop();
 
-	Async::BlockingQueue<HttpMessage> msgQ;
+}
 
+// starts the listener on the given port & listens till QUIT message is received
+void Server::start(int port)
+{
 	std::unordered_map<std::string, std::vector<std::string>> dependencyMap;
-
 	try
 	{
 		SocketSystem ss;
-		SocketListener sl(8080, Socket::IP6);
+		SocketListener sl(port, Socket::IP6);
 		ClientHandler cp(msgQ);
 		sl.start(cp);
 		/*
@@ -430,13 +428,22 @@ int main()
 		while (true)
 		{
 			HttpMessage msg = msgQ.deQ();
-			if (msg.bodyString()=="PUBLISH") {
+
+			std::cout << "\n  received message with body: " << msg.toString();
+
+			if (msg.bodyString() == "QUIT")
+				break;
+
+			if (msg.bodyString() == "PUBLISH") {
 				processPublishRequest(std::stoi(msg.findValue("CATEGORY")), dependencyMap);
-			} else if (msg.bodyString() == "DELETE") {
+			}
+			else if (msg.bodyString() == "DELETE") {
 				processDeleteRequest(std::stoi(msg.findValue("CATEGORY")));
-			} else if (msg.bodyString() == "DISPLAY") {
+			}
+			else if (msg.bodyString() == "DISPLAY") {
 				processDisplayRequest(std::stoi(msg.findValue("CATEGORY")));
-			} else if (msg.bodyString() == "DOWNLOAD") {
+			}
+			else if (msg.bodyString() == "DOWNLOAD") {
 				processDownloadRequest(std::stoi(msg.findValue("CATEGORY")), msg.findValue("FILES"), dependencyMap);
 			}
 		}
@@ -447,4 +454,10 @@ int main()
 		std::string exMsg = "\n  " + std::string(exc.what()) + "\n\n";
 		Show::write(exMsg);
 	}
+}
+
+// enqueues the QUIT messages so that the server stops
+void Server::stop()
+{
+	msgQ.enQ(makeMessage(1, "QUIT", "toAddr:localhost:8080"));
 }

@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClInclude Include="ClientHandler.h" />
     <ClInclude Include="FileSystem.h" />
+    <ClInclude Include="Server.h" />
     <ClInclude Include="Sockets.h" />
     <ClInclude Include="WindowsHelpers.h" />
   </ItemGroup>
