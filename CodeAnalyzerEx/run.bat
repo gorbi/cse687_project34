@@ -1,2 +1,8 @@
+echo "Please configure your IIS's root directory to RemoteCodePublish & run it on 8091 port"
+
+timeout /t 10
+
 cd Debug
-CodeAnalyzer.exe .. *.h *.cpp *.cs /m /f /r -SCCXMLPath ../XMLFiles/scc.overrided.xml -DepXMLPath ../XMLFiles/dep.overrided.xml
+
+start Server.exe
+start CppCli-WPF-App.exe

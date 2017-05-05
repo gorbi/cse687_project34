@@ -48,7 +48,7 @@
 #include <thread>
 #include <set>
 #include "ClientHandler.h"
-#include "../Analyzer/Executive.h"
+#include "../Executive/Executive.h"
 #include "Server.h"
 
 using Show = Logging::StaticLogger<1>;
@@ -62,6 +62,7 @@ public:
 	void stop();
 	Server(std::string httpurl);
 private:
+	void getDependentFiles(std::string file, int category, std::set<std::string>& scanned, std::set<std::string>& res, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap);
 	std::string iisHttpUrl;
 	Async::BlockingQueue<HttpMessage> msgQ;
 	void processDownloadRequest(int category, std::string files, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap);

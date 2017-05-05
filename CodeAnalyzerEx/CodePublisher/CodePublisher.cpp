@@ -2,7 +2,7 @@
 
 #include "CodePublisher.h"
 #include "../TypeAnalysis/TypeAnalysis.h"
-#include "../Analyzer/Executive.h"
+#include "../Executive/Executive.h"
 
 #ifdef TEST_CODEPUBLISHER
 int main() {

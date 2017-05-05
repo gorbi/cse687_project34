@@ -159,11 +159,14 @@
     <ClCompile Include="WindowsHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Analyzer\Executive.vcxproj">
-      <Project>{936434e9-93f0-467b-bbb7-d682483244ba}</Project>
+    <ProjectReference Include="..\AbstractSyntaxTree\AbstractSyntaxTree.vcxproj">
+      <Project>{53c7c53b-4d2f-4e71-9af3-0b77dd0034b3}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Cpp11-BlockingQueue\Cpp11-BlockingQueue.vcxproj">
       <Project>{9efc55b0-e8e8-443d-920f-c09d0af54185}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Executive\Executive.vcxproj">
+      <Project>{05cc7102-c5dc-4fb4-b7af-3ddebf8bbb06}</Project>
     </ProjectReference>
     <ProjectReference Include="..\HttpMessage\HttpMessage.vcxproj">
       <Project>{ba896bd5-c155-493b-9120-3854b644e474}</Project>

@@ -369,12 +369,12 @@ void Server::processDownloadRequest(int category, std::string files, std::unorde
 					filesPubS.insert(f);
 		}
 		else {
+			std::set<std::string> scanned;
+
 			std::vector<std::string> filesPub = split(files, ',');
-			for (std::string file : filesPub) {
-				std::vector<std::string> depFiles = dependencyMap[std::to_string(category) + "," + file];
-				for (std::string f : depFiles)
-					filesPubS.insert(f);
-			}
+			for (std::string file : filesPub)
+				getDependentFiles(file, category, scanned, filesPubS, dependencyMap);
+
 			filesPubS.insert("main.js");
 			filesPubS.insert("main.css");
 		}
@@ -469,3 +469,16 @@ Server::Server(std::string iisHttpUrl)
 {
 	this->iisHttpUrl = iisHttpUrl;
 }
+
+void Server::getDependentFiles(std::string file, int category, std::set<std::string>& scanned, std::set<std::string>& res, std::unordered_map<std::string, std::vector<std::string>>& dependencyMap)
+{
+	scanned.insert(file);
+	std::vector<std::string> depFiles = dependencyMap[std::to_string(category) + "," + file];
+	for (std::string f : depFiles) {
+		res.insert(f);
+		if (!(scanned.find(f)!=scanned.end())) {
+			getDependentFiles(f,category,scanned,res, dependencyMap);
+		}
+	}
+}
+
